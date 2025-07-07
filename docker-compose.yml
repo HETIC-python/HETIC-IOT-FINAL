@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: hetic
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  backend:
+    build:
+      context: backend
+      dockerfile: ./Dockerfile
+    container_name: backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      DATABASE_URL: postgres://user:password@db:5432/dbname
+    depends_on:
+      - db
+    command: ["sleep", "infinity"]
+
+volumes:
+  db_data:
