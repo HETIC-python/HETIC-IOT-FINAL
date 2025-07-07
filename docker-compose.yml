@@ -19,7 +19,7 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      DATABASE_URL: postgres://user:password@db:5432/dbname
+      DATABASE_URL: postgres://user:password@db:5432/hetic
     depends_on:
       - db
 
