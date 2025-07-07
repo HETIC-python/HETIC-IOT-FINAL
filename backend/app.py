@@ -5,7 +5,8 @@ app = create_app()
 
 @app.route("/")
 def home():
-    return {"message": "oj"}, 200, {"Content-Type": "application/json"}
+    print("Home route accessed")
+    return jsonify({"message": "Welcome to the Flask app!"}), 200
 
 
 if __name__ == "__main__":
