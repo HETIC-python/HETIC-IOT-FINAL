@@ -17,7 +17,7 @@ services:
       - "8000:8000"
       - "5001:5001"
     volumes:
-      - ./backend:/app
+      - ./backend:/usr/src/app
     environment:
       DATABASE_URL: postgres://user:password@db:5432/hetic
     depends_on:

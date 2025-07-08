@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
-from app.models.user import User
-from app.influxdb_client import get_influxdb_client
+from src.models import User
+from src.influxdb_client import get_influxdb_client
 
 user_bp = Blueprint('user', __name__)
 
