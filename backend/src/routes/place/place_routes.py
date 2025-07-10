@@ -9,6 +9,7 @@ def create_place():
 
 @place_bp.route("places", methods = ["GET"])
 def get_places():
+    places = Place.query.all()
     pass
 
 @place_bp.route("places/<int:place_id>", methods = ["GET"])
