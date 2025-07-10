@@ -6,6 +6,12 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: hetic
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     volumes:
       - db_data:/var/lib/postgresql/data
   backend:
@@ -16,10 +22,19 @@ services:
     ports:
       - "8000:8000"
       - "5001:5001"
+      - "127.0.0.1:5000:5000"
+      - "5678:5678"
     volumes:
       - ./backend:/usr/src/app
     environment:
       DATABASE_URL: postgres://user:password@db:5432/hetic
+    depends_on:
+      - db
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "8080:8080"
     depends_on:
       - db
 
