@@ -6,6 +6,7 @@ app = create_app()
 
 @app.route("/")
 def home():
+    a=18
     print("Home route accessed")
     return jsonify({"message": "Welcome to the Flask app! uwu"}), 200
 
