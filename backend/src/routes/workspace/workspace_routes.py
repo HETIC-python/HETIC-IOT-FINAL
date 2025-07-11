@@ -11,7 +11,9 @@ def get_workspaces():
         {
             'id': w.id,
             'user_id': w.user_id,
-            'sensor_id': w.sensor_id,
+            'sensors': [
+                {'id': s.id, 'name': s.name} for s in w.sensors
+            ],
             'name': w.name,
             'description': w.description,
             'created_at': w.created_at.isoformat() if w.created_at else None,
@@ -26,7 +28,9 @@ def get_workspace(workspace_id):
     return jsonify({
         'id': workspace.id,
         'user_id': workspace.user_id,
-        'sensor_id': workspace.sensor_id,
+        'sensors': [
+            {'id': s.id, 'name': s.name} for s in workspace.sensors
+        ],
         'name': workspace.name,
         'description': workspace.description,
         'created_at': workspace.created_at.isoformat() if workspace.created_at else None,
@@ -39,7 +43,6 @@ def create_workspace():
     data = request.get_json()
     workspace = Workspace(
         user_id=data['user_id'],
-        sensor_id=data['sensor_id'],
         name=data['name'],
         description=data['description'],
         created_at=data['created_at'],
@@ -55,7 +58,6 @@ def update_workspace(workspace_id):
     workspace = Workspace.query.get_or_404(workspace_id)
     data = request.get_json()
     workspace.user_id = data.get('user_id', workspace.user_id)
-    workspace.sensor_id = data.get('sensor_id', workspace.sensor_id)
     workspace.name = data.get('name', workspace.name)
     workspace.description = data.get('description', workspace.description)
     workspace.created_at = data.get('created_at', workspace.created_at)
@@ -70,3 +72,11 @@ def delete_workspace(workspace_id):
     db.session.delete(workspace)
     db.session.commit()
     return jsonify({'message': 'Workspace deleted'})
+
+# Optionnel : route pour lister les sensors d'un workspace
+@workspace_bp.route('/workspaces/<int:workspace_id>/sensors', methods=['GET'])
+def get_workspace_sensors(workspace_id):
+    workspace = Workspace.query.get_or_404(workspace_id)
+    return jsonify([
+        {'id': s.id, 'name': s.name} for s in workspace.sensors
+    ])
