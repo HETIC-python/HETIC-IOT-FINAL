@@ -1,6 +1,6 @@
 from src import create_app
 from flask import jsonify
-
+from src.routes.workspace.workspace_routes import workspace_bp
 app = create_app()
 
 
@@ -8,6 +8,8 @@ app = create_app()
 def home():
     print("Home route accessed")
     return jsonify({"message": "Welcome to the Flask app! uwu"}), 200
+
+app.register_blueprint(workspace_bp, url_prefix="/api")
 
 
 if __name__ == "__main__":

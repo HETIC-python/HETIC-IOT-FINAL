@@ -12,6 +12,7 @@ class Sensor(db.Model):
     humidity = db.Column(db.Float, nullable=True)
     pressure = db.Column(db.Float, nullable=True)
     mouvement = db.Column(db.Float, nullable=True)
+    workspace_id = db.Column(db.Integer, db.ForeignKey('workspaces.id'), nullable=False)
 
     def __repr__(self):
         return f"<Sensor {self.name} (id={self.id})>"
