@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.input-base-style {
+    @apply h-12 border border-secondary-300 px-3 bg-white text-secondary-900 rounded-lg shadow-sm;
+}
