@@ -1,4 +1,5 @@
-from app.extensions import db
+from src.extensions import db
+
 
 class Sensor(db.Model):
     __tablename__ = 'sensors'

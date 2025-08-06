@@ -2,6 +2,7 @@ blinker==1.9.0
 certifi==2025.6.15
 click==8.2.1
 Flask==3.1.1
+Flask-CORS==4.0.0
 Flask-SQLAlchemy==3.1.1
 greenlet==3.2.3
 influxdb-client==1.49.0
@@ -14,6 +15,7 @@ reactivex==4.0.4
 setuptools==80.9.0
 six==1.17.0
 SQLAlchemy==2.0.41
+stripe==7.11.0
 typing_extensions==4.14.1
 urllib3==2.5.0
 Werkzeug==3.1.3
