@@ -22,6 +22,9 @@ def home():
 # app.register_blueprint(workspace_bp, url_prefix="/api")
 # app.register_blueprint(order_bp, url_prefix='/api')
 
+@app.route("/")
+def home():
+    return jsonify({"message": "Welcome to the Flask app! uwu"}), 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
