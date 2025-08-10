@@ -1,5 +1,6 @@
 from src.extensions import db
 
+
 class Task(db.Model):
     __tablename__ = 'tasks'
 
@@ -11,3 +12,4 @@ class Task(db.Model):
     updated_at = db.Column(db.DateTime, nullable=False)
 
     def __repr__(self):
+        return f"<Task {self.name}>"
