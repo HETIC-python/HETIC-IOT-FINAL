@@ -1,6 +1,6 @@
-from flask import Blueprint, request, jsonify
-from src.models.workspace.workspace import Workspace
+from flask import Blueprint, jsonify, request
 from src.extensions import db
+from src.models.workspace.workspace import Workspace
 
 workspace_bp = Blueprint('workspace', __name__)
 

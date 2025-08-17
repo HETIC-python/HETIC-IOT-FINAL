@@ -7,7 +7,7 @@ from src.routes.workspace.workspace_routes import workspace_bp
 app = create_app()
 CORS(app, resources={
     r"/api/*": {
-        "origins": ["http://localhost:3000", "http://localhost:5173"],
+        "origins": ["http://localhost:3000", "http://localhost:5173", "http://localhost:8081", ],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
     }
