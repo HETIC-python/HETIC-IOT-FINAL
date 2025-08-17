@@ -8,6 +8,6 @@ main = Blueprint("main", __name__)
 
 
 def register_blueprints(app):
-    app.register_blueprint(user_bp)
-    app.register_blueprint(workspace_bp)
+    app.register_blueprint(user_bp, url_prefix="/api")
+    app.register_blueprint(workspace_bp, url_prefix="/api")
     app.register_blueprint(order_bp, url_prefix="/api")
