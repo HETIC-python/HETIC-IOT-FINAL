@@ -1,6 +1,7 @@
 import { loadStripe } from "@stripe/stripe-js";
 import { useState } from "react";
 import Autocomplete from "react-google-autocomplete";
+import { KeyFeatures, WhatsIncluded, WhyChooseUs } from "../components/Kit";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -258,35 +259,33 @@ export function KitPage() {
 
   return (
     <div className="container mx-auto px-4 py-16">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold mb-6">
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-4xl font-bold text-center mb-10">
           IoT Environment Monitoring Kit
         </h1>
 
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <img
-            src="/src/assets/iot-hero.jpg"
-            alt="IoT Kit"
-            className="w-full h-64 object-cover"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-lg shadow-lg overflow-hidden">
+          <div>
+            <img
+              src="/src/assets/iot-hero.jpg"
+              alt="IoT Kit"
+              className="w-full h-80 object-cover"
+            />
+          </div>
           <div className="p-6">
-            <div className="mb-6">
-              <h2 className="text-2xl font-semibold mb-4">
-                Complete DIY Environment Monitoring Solution
-              </h2>
-              <p className="text-gray-600 mb-4">
-                Our IoT kit comes with everything you need to start monitoring
-                your environment:
-              </p>
-              <ul className="list-disc pl-5 space-y-2 text-gray-600">
-                <li>High-precision temperature and humidity sensors</li>
-                <li>Air quality monitoring components</li>
-                <li>Pre-configured Raspberry Pi</li>
-                <li>Custom PCB for easy assembly</li>
-                <li>Detailed setup guide and documentation</li>
-                <li>Access to our cloud monitoring platform</li>
-              </ul>
-            </div>
+            <h2 className="text-2xl font-semibold mb-4">
+              Complete DIY Environment Monitoring Solution
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Monitor your environment with precision and ease using our IoT
+              Environment Monitoring Kit. This kit is designed for enthusiasts,
+              professionals, and anyone looking to track environmental data
+              seamlessly.
+            </p>
+
+            <WhatsIncluded />
+
+            <KeyFeatures />
 
             <div className="flex items-center justify-between border-t pt-6">
               <div>
@@ -296,20 +295,20 @@ export function KitPage() {
 
               <button
                 onClick={handleBuyNow}
-                className={`px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold
-                  ${"hover:bg-blue-700"}`}
+                className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
                 Buy Now
               </button>
             </div>
           </div>
         </div>
+
+        <WhyChooseUs />
       </div>
 
       <AddressModal
         isOpen={showAddressModal}
         onClose={() => setShowAddressModal(false)}
-        // onSubmit={handleAddressSubmit}
       />
     </div>
   );
