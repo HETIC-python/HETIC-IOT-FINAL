@@ -18,11 +18,11 @@ function RootLayoutNav() {
   return (
     <Stack
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
       }}
     >
       {token ? (
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: true }} />
       ) : (
         <>
           <Stack.Screen name="sign-in" options={{ headerShown: true }} />
