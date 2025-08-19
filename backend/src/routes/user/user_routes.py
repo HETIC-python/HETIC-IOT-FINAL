@@ -7,7 +7,11 @@ user_bp = Blueprint('user', __name__)
 @user_bp.route('/users')
 def get_users():
     users = User.query.all()
-    return jsonify([{'id': u.id, 'username': u.username, 'email': u.email} for u in users])
+    return jsonify([{
+        'id': u.id,
+        'username': u.username,
+        'email': u.email
+    } for u in users])
 
 @user_bp.route('/influxdb/ping')
 def influxdb_ping():
@@ -16,4 +20,4 @@ def influxdb_ping():
         health = client.ping()
         return jsonify({'influxdb': 'reachable', 'health': str(health)})
     except Exception as e:
-        return jsonify({'influxdb': 'unreachable', 'error': str(e)}), 500 
+        return jsonify({'influxdb': 'unreachable', 'error': str(e)}), 500
