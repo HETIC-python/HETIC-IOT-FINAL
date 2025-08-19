@@ -80,3 +80,22 @@ Content-Type: application/json
 ### Test InfluxDB Connection
 GET {{baseUrl}}/influxdb/ping
 Authorization: Bearer {{authToken}}
+
+### Request Password Reset
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+    "email": "test@example.com"
+}
+
+### Reset Password with Token
+POST {{baseUrl}}/auth/reset-password/your_reset_token_here
+Content-Type: application/json
+
+{
+    "password": "newpassword123"
+}
+
+### Validate Account
+GET {{baseUrl}}/auth/validate/your_validation_token_here
