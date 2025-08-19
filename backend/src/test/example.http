@@ -1,0 +1,101 @@
+### Variables
+@baseUrl = http://localhost:5000/api
+@authToken = your_jwt_token_here
+
+### Authentication
+# @name signup
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+    "username": "testuser6",
+    "email": "test6@example.com",
+    "password": "password123"
+}
+
+### Login
+# @name login
+POST {{baseUrl}}/auth/signin
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "password": "password123"
+}
+
+### Store the auth token from login response
+@authToken = {{login.response.body.token}}
+
+### Get Users (Protected Route)
+GET {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+
+### Create Workspace (Protected Route)
+POST {{baseUrl}}/workspaces
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "Test Workspace",
+    "description": "A test workspace",
+    "user_id": 1,
+    "created_at": "{{$datetime iso8601}}",
+    "updated_at": "{{$datetime iso8601}}",
+    "is_active": true
+}
+
+### Get All Workspaces (Protected Route)
+GET {{baseUrl}}/workspaces
+Authorization: Bearer {{authToken}}
+
+### Get Single Workspace (Protected Route)
+GET {{baseUrl}}/workspaces/1
+Authorization: Bearer {{authToken}}
+
+### Update Workspace (Protected Route)
+PUT {{baseUrl}}/workspaces/1
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "Updated Workspace",
+    "description": "Updated description"
+}
+
+### Create Order
+POST {{baseUrl}}/create-checkout-session
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "customerInfo": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john@example.com",
+        "mobile": "+33612345678",
+        "address": "123 Test Street, Paris"
+    }
+}
+
+### Test InfluxDB Connection
+GET {{baseUrl}}/influxdb/ping
+Authorization: Bearer {{authToken}}
+
+### Request Password Reset
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+    "email": "test@example.com"
+}
+
+### Reset Password with Token
+POST {{baseUrl}}/auth/reset-password/your_reset_token_here
+Content-Type: application/json
+
+{
+    "password": "newpassword123"
+}
+
+### Validate Account
+GET {{baseUrl}}/auth/validate/your_validation_token_here

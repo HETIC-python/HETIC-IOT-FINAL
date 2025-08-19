@@ -12,3 +12,15 @@ class Config:
     # Stripe Configuration
     STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
     STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+
+    SECRET_KEY = 'test-secret-key'
+    MAIL_DEFAULT_SENDER = 'example@gmail.com'
+
+
+class TestConfig:
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # Use in-memory SQLite for testing
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = 'test-secret-key'
+    MAIL_DEFAULT_SENDER = 'test@example.com'
+    FRONTEND_URL = 'http://localhost:3000'
