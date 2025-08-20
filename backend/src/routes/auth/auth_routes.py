@@ -1,9 +1,9 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
+from src.extensions import db
 from src.models import User
+from src.schemas.user_schema import UserLoginSchema, UserSignupSchema
 from src.service.auth_service import AuthService
 from src.service.mail_service import MailService
-from src.schemas.user_schema import UserSignupSchema, UserLoginSchema
-from src.extensions import db
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -15,6 +15,9 @@ def signup():
         
         if User.query.filter_by(email=data['email']).first():
             return jsonify({'error': 'Email already exists'}), 400
+            
+        if User.query.filter_by(username=data['username']).first():
+            return jsonify({'error': 'Username already exists'}), 400
 
         user = User(
             username=data['username'],

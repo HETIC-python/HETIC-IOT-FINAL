@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useAuth } from "../src/context/AuthContext";
 
@@ -12,8 +12,14 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const { signIn } = useAuth();
+  const { signIn, isSignedIn } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (isSignedIn) {
+      router.replace("/(tabs)");
+    }
+  }, [isSignedIn, router]);
 
   const handleSignIn = async () => {
     try {
@@ -28,7 +34,9 @@ export default function SignIn() {
         return;
       }
 
+      console.log("Attempting sign in for user:", email);
       await signIn(email, password);
+      console.log("SignIn successful for user:", email);
       router.replace("/(tabs)");
     } catch (error) {
       if (error instanceof Error) {
@@ -38,6 +46,10 @@ export default function SignIn() {
       }
     }
   };
+
+  if (isSignedIn) {
+    return null;
+  }
 
   return (
     <View className="flex-1 justify-center p-4">
