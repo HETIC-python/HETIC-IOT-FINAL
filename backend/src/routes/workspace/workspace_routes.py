@@ -42,7 +42,7 @@ def get_workspace(workspace_id):
 def create_workspace():
     data = request.get_json()
     workspace = Workspace(
-        user_id=data['user_id'],
+        user_id=1,# data['user_id'],
         name=data['name'],
         description=data['description'],
         created_at=data['created_at'],
