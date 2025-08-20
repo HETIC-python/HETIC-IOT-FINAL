@@ -173,7 +173,7 @@ export default function Workspace() {
   };
 
   const handleWorkspacePress = (workspaceId: string) => {
-    router.push(`/dashboard/${workspaceId}`);
+    router.push(`/workspace/${workspaceId}`);
   };
 
   return (
