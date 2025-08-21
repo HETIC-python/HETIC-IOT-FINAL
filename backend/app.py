@@ -13,7 +13,6 @@ CORS(
                 "http://localhost:3000",
                 "http://localhost:5173",
                 "http://localhost:8081",
-                "http://localhost:8081",
             ],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
