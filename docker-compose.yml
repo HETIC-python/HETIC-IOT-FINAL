@@ -4,7 +4,11 @@ services:
   web:
     build: ./backend
     ports:
-      - "5000:5000"
+      - "127.0.0.1:5000:5000"
+      - "8000:8000"
+      - "5001:5001"
+      # - "5000:5000"
+      - "5678:5678"
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=development
@@ -13,6 +17,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=iot_db
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
     depends_on:
       - db
     volumes:
@@ -32,7 +37,7 @@ services:
   adminer:
     image: adminer
     ports:
-      - "8080:8080"
+      - "8180:8080"
     depends_on:
       - db
 

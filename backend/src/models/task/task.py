@@ -1,6 +1,7 @@
 from datetime import datetime
 from src.extensions import db
 
+
 class Task(db.Model):
     __tablename__ = 'tasks'
 
@@ -23,3 +24,4 @@ class Task(db.Model):
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
+       
