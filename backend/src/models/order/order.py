@@ -17,6 +17,13 @@ class Order(db.Model):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
+    # Customer Information - make nullable initially
+    first_name = Column(String(255), nullable=True)
+    last_name = Column(String(255), nullable=True)
+    email = Column(String(255), nullable=True)
+    mobile = Column(String(20), nullable=True)
+    shipping_address = Column(String(500), nullable=True)
+
     #TODO: Update relationship with back_populates
     # user = relationship("User", back_populates="orders", lazy='joined')
 

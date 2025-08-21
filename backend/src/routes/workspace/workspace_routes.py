@@ -1,6 +1,6 @@
-from flask import Blueprint, request, jsonify
-from src.models.workspace.workspace import Workspace
+from flask import Blueprint, jsonify, request
 from src.extensions import db
+from src.models.workspace.workspace import Workspace
 
 workspace_bp = Blueprint('workspace', __name__)
 
@@ -42,7 +42,7 @@ def get_workspace(workspace_id):
 def create_workspace():
     data = request.get_json()
     workspace = Workspace(
-        user_id=data['user_id'],
+        user_id=1,# data['user_id'],
         name=data['name'],
         description=data['description'],
         created_at=data['created_at'],

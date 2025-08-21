@@ -12,10 +12,12 @@
   "dependencies": {
     "@stripe/stripe-js": "^7.8.0",
     "@tailwindcss/vite": "^4.1.11",
+    "@types/google.maps": "^3.58.1",
     "axios": "^1.11.0",
     "lucide-react": "^0.536.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-google-autocomplete": "^2.7.5",
     "react-router-dom": "^7.7.1",
     "tailwindcss": "^4.1.11"
   },

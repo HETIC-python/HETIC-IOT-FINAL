@@ -33,6 +33,8 @@ module.exports = {
         error: '#ff6b6b',
         success: '#51cf66',
         warning: '#fcc419',
+        background: '#ffffff', // Background color for light mode
+        border: '#e5e7eb', // Border color for light mode
       }
     },
   },

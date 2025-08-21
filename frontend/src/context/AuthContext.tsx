@@ -1,5 +1,6 @@
 import * as SecureStore from "expo-secure-store";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { Platform } from "react-native";
 import { authService } from "./../services/AuthService";
 
 type SignUpData = {
@@ -21,20 +22,47 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
 
+  useEffect(() => {
+    const loadToken = async () => {
+      let storedToken: string | null = null;
+      if (Platform.OS === 'web') {
+        storedToken = localStorage.getItem('token');
+      } else {
+        storedToken = await SecureStore.getItemAsync('token');
+      }
+      if (storedToken) {
+        setToken(storedToken);
+      }
+    };
+    loadToken();
+  }, []);
+
   const authContextValue = {
     token,
     signIn: async (email: string, password: string) => {
       const token = await authService.signIn(email, password);
-      await SecureStore.setItemAsync("token", token);
+      if (Platform.OS === 'web') {
+        localStorage.setItem("token", token);
+      } else {
+        await SecureStore.setItemAsync("token", token);
+      }
       setToken(token);
     },
     signUp: async (data: SignUpData) => {
       const token = await authService.signUp(data);
-      await SecureStore.setItemAsync("token", token);
+      if (Platform.OS === 'web') {
+        localStorage.setItem("token", token);
+      } else {
+        await SecureStore.setItemAsync("token", token);
+      }
       setToken(token);
     },
     signOut: async () => {
-      await SecureStore.deleteItemAsync("token");
+      if (Platform.OS === 'web') {
+        localStorage.removeItem("token");
+      } else {
+        await SecureStore.deleteItemAsync("token");
+      }
       setToken(null);
     },
   };
