@@ -2,11 +2,11 @@ import { SERVER_API_URL } from "@/config/api";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    ActivityIndicator,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const validateEmail = (email: string): boolean => {
@@ -125,7 +125,7 @@ export default function ForgotPassword() {
 
         <TouchableOpacity
           className="mt-4"
-          onPress={() => router.back()}
+          onPress={() => router.replace("/sign-in")}
           disabled={isLoading}
         >
           <Text className="text-secondary-600 text-center">
