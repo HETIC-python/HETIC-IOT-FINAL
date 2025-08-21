@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
+import Dashboard from "@/components/Dashboard";
 
 type Workspace = {
   id: string;
@@ -194,17 +195,18 @@ export default function Workspace() {
           <ActivityIndicator size="large" color="#0072ff" />
         </View>
       ) : workspaces.length === 0 ? (
-        <View className="flex-1 justify-center items-center px-4 -mt-16">
-          <Text className="text-base text-gray-600 text-center mb-4">
-            No workspaces available. Create your first workspace to get started.
-          </Text>
-          <TouchableOpacity
-            onPress={() => setShowCreateModal(true)}
-            className="bg-blue-500 px-6 py-3 rounded-full"
-          >
-            <Text className="text-white font-semibold">Create Workspace</Text>
-          </TouchableOpacity>
-        </View>
+        // <View className="flex-1 justify-center items-center px-4 -mt-16">
+        //   <Text className="text-base text-gray-600 text-center mb-4">
+        //     No workspaces available. Create your first workspace to get started.
+        //   </Text>
+        //   <TouchableOpacity
+        //     onPress={() => setShowCreateModal(true)}
+        //     className="bg-blue-500 px-6 py-3 rounded-full"
+        //   >
+        //     <Text className="text-white font-semibold">Create Workspace</Text>
+        //   </TouchableOpacity>
+        // </View>
+        <Dashboard/>
       ) : (
         <FlatList
           data={workspaces}
