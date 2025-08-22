@@ -24,6 +24,10 @@ class User(db.Model):
         db.Enum("admin", "user", name="user_roles"), default="user", nullable=False
     )
 
+    @property
+    def is_admin(self):
+        return self.role == "admin"
+
     # TODO: Relationship with Order
     # orders = relationship("Order", back_populates="user", lazy='dynamic')
 

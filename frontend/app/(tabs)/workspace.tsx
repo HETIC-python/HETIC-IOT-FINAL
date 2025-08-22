@@ -1,3 +1,4 @@
+import Dashboard from "@/components/Dashboard";
 import { SERVER_API_URL } from "@/config/api";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -11,7 +12,6 @@ import {
 } from "react-native";
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
-import Dashboard from "@/components/Dashboard";
 
 type Workspace = {
   id: string;
@@ -181,14 +181,14 @@ export default function Workspace() {
     <View className="flex-1 bg-gray-50">
       <Header title="My Workspaces" />
       
-      <View className="p-4 flex-row justify-end">
+      {/* <View className="p-4 flex-row justify-end">
         <TouchableOpacity
           onPress={() => setShowCreateModal(true)}
           className="bg-blue-500 px-4 py-2 rounded-full"
         >
           <Text className="text-white font-medium">Create New</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {isLoading ? (
         <View className="flex-1 justify-center items-center">
