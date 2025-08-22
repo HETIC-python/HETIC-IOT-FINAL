@@ -13,7 +13,7 @@ import { AuthProvider, useAuth } from "../src/context/AuthContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 function RootLayoutNav() {
-  const { token } = useAuth();
+  const { isSignedIn } = useAuth();
 
   return (
     <Stack
@@ -21,7 +21,7 @@ function RootLayoutNav() {
         headerShown: false,
       }}
     >
-      {token ? (
+      {isSignedIn ? (
         <Stack.Screen name="(tabs)" options={{ headerShown: true }} />
       ) : (
         <>
@@ -41,7 +41,6 @@ export default function RootLayout() {
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 

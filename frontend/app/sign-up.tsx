@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import * as Yup from "yup";
 import { useAuth } from "../src/context/AuthContext";
@@ -16,6 +16,7 @@ const signUpSchema = Yup.object().shape({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm password is required"),
+  username: Yup.string().required("Username is required"),
 });
 
 type ValidationErrors = {
@@ -24,7 +25,45 @@ type ValidationErrors = {
   email?: string;
   password?: string;
   confirmPassword?: string;
+  username?: string;
 };
+
+function SuccessModal({
+  isVisible,
+  onClose,
+}: {
+  isVisible: boolean;
+  onClose: () => void;
+}) {
+  if (!isVisible) return null;
+
+  return (
+    <View className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
+      <View className="bg-white w-[90%] max-w-md rounded-2xl p-6 mx-4 items-center">
+        <View className="w-16 h-16 bg-success/10 rounded-full items-center justify-center mb-4">
+          <Text className="text-4xl">✓</Text>
+        </View>
+
+        <Text className="text-xl font-semibold text-center mb-2">
+          Account Created Successfully!
+        </Text>
+
+        <Text className="text-secondary-600 text-center mb-6">
+          Please check your email to verify your account before signing in.
+        </Text>
+
+        <TouchableOpacity
+          onPress={onClose}
+          className="bg-primary-500 px-8 py-3 rounded-full w-full"
+        >
+          <Text className="text-white text-center font-semibold">
+            Continue to Sign In
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -33,13 +72,22 @@ export default function SignUp() {
     email: "",
     password: "",
     confirmPassword: "",
+    username: "",
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { signUp } = useAuth();
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const { signUp, isSignedIn } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (isSignedIn) {
+      router.replace("/(tabs)");
+    }
+  }, [isSignedIn]);
 
   const validateForm = async () => {
     try {
@@ -68,7 +116,7 @@ export default function SignUp() {
 
       const { confirmPassword, ...signUpData } = formData;
       await signUp(signUpData);
-      router.replace("/(tabs)");
+      setShowSuccessModal(true);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -80,7 +128,6 @@ export default function SignUp() {
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error when user types
     if (errors[field as keyof ValidationErrors]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
@@ -111,9 +158,10 @@ export default function SignUp() {
         </View>
 
         <View>
+          <Text className="text-secondary-700 text-sm mb-1">Last Name</Text>
           <TextInput
             className="input-base-style"
-            placeholder="Last Name"
+            placeholder="Enter your last name"
             value={formData.lastName}
             onChangeText={(value) => handleChange("lastName", value)}
           />
@@ -123,9 +171,24 @@ export default function SignUp() {
         </View>
 
         <View>
+          <Text className="text-secondary-700 text-sm mb-1">Username</Text>
           <TextInput
             className="input-base-style"
-            placeholder="Email"
+            placeholder="Enter your username"
+            value={formData.username}
+            onChangeText={(value) => handleChange("username", value)}
+            autoCapitalize="none"
+          />
+          {errors.username && (
+            <Text className="text-error text-sm mt-1">{errors.username}</Text>
+          )}
+        </View>
+
+        <View>
+          <Text className="text-secondary-700 text-sm mb-1">Email</Text>
+          <TextInput
+            className="input-base-style"
+            placeholder="Enter your email"
             value={formData.email}
             onChangeText={(value) => handleChange("email", value)}
             autoCapitalize="none"
@@ -137,10 +200,11 @@ export default function SignUp() {
         </View>
 
         <View>
+          <Text className="text-secondary-700 text-sm mb-1">Password</Text>
           <View className="flex-row items-center">
             <TextInput
               className="input-base-style flex-auto"
-              placeholder="Password"
+              placeholder="Enter your password"
               value={formData.password}
               onChangeText={(value) => handleChange("password", value)}
               secureTextEntry={!showPassword}
@@ -160,10 +224,13 @@ export default function SignUp() {
         </View>
 
         <View>
+          <Text className="text-secondary-700 text-sm mb-1">
+            Confirm Password
+          </Text>
           <View className="flex-row items-center">
             <TextInput
               className="input-base-style flex-auto"
-              placeholder="Confirm Password"
+              placeholder="Confirm your password"
               value={formData.confirmPassword}
               onChangeText={(value) => handleChange("confirmPassword", value)}
               secureTextEntry={!showConfirmPassword}
@@ -201,6 +268,14 @@ export default function SignUp() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      <SuccessModal
+        isVisible={showSuccessModal}
+        onClose={() => {
+          setShowSuccessModal(false);
+          router.replace("/sign-in");
+        }}
+      />
     </View>
   );
 }

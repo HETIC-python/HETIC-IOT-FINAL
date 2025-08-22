@@ -1,9 +1,19 @@
-from src import create_app
 from flask import jsonify
 from flask_cors import CORS
+from src import create_app
 
 app = create_app()
-CORS(app)
+CORS(
+    app,
+    resources={
+        r"/*": {  # Allow all routes
+            "origins": "*",  # Allow all origins
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["*"],  # Allow all headers
+            "expose_headers": ["*"],
+        }
+    },
+)
 
 
 @app.route("/")

@@ -287,10 +287,10 @@ export function KitPage() {
 
             <KeyFeatures />
 
-            <div className="flex items-center justify-between border-t pt-6">
-              <div>
-                <p className="text-gray-500">Price</p>
-                <p className="text-3xl font-bold">$199.00</p>
+            <div className="flex flex-col gap-4 sm:flex-row items-center justify-between border-t pt-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+                <p className="text-gray-500 text-sm sm:text-base">Price</p>
+                <p className="text-xl sm:text-3xl font-bold">$199.00</p>
               </div>
 
               <button

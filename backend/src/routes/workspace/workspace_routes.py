@@ -1,16 +1,19 @@
-from flask import Blueprint, jsonify, request, current_app
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+import logging
+from datetime import datetime
+
+from flask import Blueprint, current_app, jsonify, request
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from src.extensions import db
 from src.models.workspace.workspace import Workspace
-import logging
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-workspace_bp = Blueprint('workspace', __name__)
+workspace_bp = Blueprint("workspace", __name__)
 
-@workspace_bp.route('/workspaces', methods=['GET'])
+
+@workspace_bp.route("/workspaces", methods=["GET"])
 def get_workspaces():
     try:
         workspaces = Workspace.query.all()
@@ -46,7 +49,8 @@ def get_workspaces():
         logger.error(f"Erreur inattendue lors de la récupération des workspaces: {str(e)}")
         return jsonify({'error': 'Erreur serveur', 'message': 'Une erreur inattendue s\'est produite'}), 500
 
-@workspace_bp.route('/workspaces/<int:workspace_id>', methods=['GET'])
+
+@workspace_bp.route("/workspaces/<int:workspace_id>", methods=["GET"])
 def get_workspace(workspace_id):
     try:
         workspace = Workspace.query.get(workspace_id)
@@ -119,7 +123,28 @@ def create_workspace():
         db.session.rollback()
         return jsonify({'error': 'Erreur serveur', 'message': 'Une erreur inattendue s\'est produite'}), 500
 
-@workspace_bp.route('/workspaces/<int:workspace_id>', methods=['PUT'])
+
+@workspace_bp.route("/workspaces", methods=["POST"])
+def create_workspace():
+    try:
+        data = request.get_json()
+        workspace = Workspace(
+            user_id=data.get("user_id", 1),
+            name=data.get("name"),
+            description=data.get("description"),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+            is_active=data.get("is_active", True),
+        )
+        db.session.add(workspace)
+        db.session.commit()
+        return jsonify({"message": "Workspace created", "id": workspace.id}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
+
+
+@workspace_bp.route("/workspaces/<int:workspace_id>", methods=["PUT"])
 def update_workspace(workspace_id):
     try:
         if not request.is_json:
@@ -164,7 +189,8 @@ def update_workspace(workspace_id):
         db.session.rollback()
         return jsonify({'error': 'Erreur serveur', 'message': 'Une erreur inattendue s\'est produite'}), 500
 
-@workspace_bp.route('/workspaces/<int:workspace_id>', methods=['DELETE'])
+
+@workspace_bp.route("/workspaces/<int:workspace_id>", methods=["DELETE"])
 def delete_workspace(workspace_id):
     try:
         workspace = Workspace.query.get(workspace_id)
