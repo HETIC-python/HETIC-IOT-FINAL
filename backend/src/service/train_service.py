@@ -26,10 +26,16 @@ class TrainService:
 
     def train_and_save_model(self):
         X, y = self.generate_data()
+        X = X.reshape((X.shape[0], X.shape[1], 1))
         model = self.create_model((X.shape[1], 1))
+        
+        print("Entraînement du modèle...")
         model.fit(X, y, epochs=10, batch_size=32, validation_split=0.2)
-
-        output_path = "saved_model/my_lstm_model"
-        os.makedirs(output_path, exist_ok=True)
+        
+        output_path = "/tmp/my_lstm_model.keras"
+        print(f"Sauvegarde du modèle dans : {output_path}")
         model.save(output_path)
+        
+        print("Modèle entraîné et sauvegardé avec succès.")
         return True
+

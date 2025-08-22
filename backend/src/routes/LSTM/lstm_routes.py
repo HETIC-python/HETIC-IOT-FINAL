@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from src.services.lstm_service import LSTMService
-from src.services.train_service import TrainService
+from src.service.lstm_service import LSTMService
+from src.service.train_service import TrainService
 
 lstm_bp = Blueprint('lstm', __name__)
 predict_service = LSTMService()

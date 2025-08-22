@@ -2,7 +2,6 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-import os
 
 def generate_synthetic_data(seq_length=20, num_samples=1000):
     X, y = [], []
@@ -35,11 +34,9 @@ def train_and_save():
     print("Entraînement...")
     model.fit(X, y, epochs=10, batch_size=32, validation_split=0.2)
 
-    output_path = "saved_model/my_lstm_model"
-    os.makedirs(output_path, exist_ok=True)
-
+    output_path = "/tmp/my_lstm_model.keras"
     print(f"Sauvegarde dans : {output_path}")
-    model.save(output_path)
+    model.save(output_path)  
     print("Modèle entraîné et sauvegardé avec succès.")
 
 if __name__ == "__main__":
