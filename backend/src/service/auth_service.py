@@ -1,8 +1,10 @@
-from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
 from datetime import datetime, timedelta
+
+import jwt
 from flask import current_app
 from src.models import User
+from werkzeug.security import check_password_hash, generate_password_hash
+
 
 class AuthService:
     @staticmethod
@@ -27,3 +29,9 @@ class AuthService:
     @staticmethod
     def check_password(user, password):
         return check_password_hash(user.password, password)
+
+    @staticmethod
+    def verify_user_authenticated(token):
+        decoded = AuthService.verify_token(token)
+        user = User.query.get(decoded['user_id']) if decoded else None
+        return user is not None and user.is_validated
