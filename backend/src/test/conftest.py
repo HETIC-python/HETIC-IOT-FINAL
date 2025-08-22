@@ -1,11 +1,12 @@
-import pytest
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from src.extensions import db
 from src import create_app
+from src.extensions import db
 from src.models import User, Workspace
 from src.service.auth_service import AuthService
 
@@ -54,10 +55,22 @@ def test_workspace(app):
     """Workspace de test pour sensors"""
     with app.app_context():
         # Nettoyage workspaces
+        db.session.query(User).delete()
         db.session.query(Workspace).delete()
         db.session.commit()
 
-        ws = Workspace(name="Test Workspace")
+        user = User(
+            username="testuser",
+            email="test500@example.com",
+            password=AuthService.hash_password("password123"),
+            is_validated=True,
+        )
+        print("i am the user", user)
+        db.session.add(user)
+        db.session.commit()
+        db.session.refresh(user)
+
+        ws = Workspace(name="Test Workspace", user_id=user.id, description="A test workspace", is_active=True)
         db.session.add(ws)
         db.session.commit()
         db.session.refresh(ws)
@@ -66,4 +79,5 @@ def test_workspace(app):
 
         # Cleanup
         db.session.query(Workspace).delete()
+        db.session.query(User).delete()
         db.session.commit()

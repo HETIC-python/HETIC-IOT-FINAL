@@ -1,7 +1,7 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 from sqlalchemy.exc import SQLAlchemyError
-from src.models import Sensor, Workspace
 from src.extensions import db
+from src.models import Sensor, Workspace
 
 sensor_bp = Blueprint("sensor_bp", __name__)
 
@@ -24,9 +24,15 @@ def create_sensor():
 
         sensor = Sensor(
             name=data.get("name"),
-            type=data.get("type"),
+            # type=data.get("type"),
+            status=data.get("status", "inactive"),
             workspace_id=workspace_id
         )
+
+        if not sensor.name:
+            return jsonify({"error": "name is required"}), 400
+        if not sensor.status:
+            return jsonify({"error": "status is required"}), 400
         db.session.add(sensor)
         db.session.commit()
         return jsonify({"message": "Sensor created", "sensor": sensor.to_dict()}), 201
@@ -35,6 +41,7 @@ def create_sensor():
         db.session.rollback()
         return jsonify({"error": "Database error", "details": str(e)}), 500
     except Exception as e:
+        print("this is json", request.get_json())
         return jsonify({"error": "Unexpected error", "details": str(e)}), 500
 
 
