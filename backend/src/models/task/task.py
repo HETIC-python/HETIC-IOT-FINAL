@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from src.extensions import db
 
 sensor_task = db.Table('sensor_task',
@@ -33,4 +34,6 @@ class Task(db.Model):
             'updated_at': self.updated_at.isoformat(),
             'sensors': [{'id': sensor.id, 'name': sensor.name} for sensor in self.sensors]
         }
+
+
 

@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from src.extensions import db
-from src.models.task.task import Task
 from src.models.sensor.sensor import Sensor
+from src.models.task.task import Task
 
 task_bp = Blueprint('task', __name__)
 
@@ -67,32 +67,24 @@ def delete_task(task_id):
     return jsonify({'message': 'Task deleted successfully'})
 
 
-@task_bp.route('/tasks/<int:task_id>/sensors', methods=['POST'])
-def add_sensors_to_task(task_id):
+@task_bp.route('/tasks/<int:task_id>/sensors/<int:sensor_id>', methods=['POST'])
+def add_sensor_to_task(task_id, sensor_id):
     task = Task.query.get_or_404(task_id)
-    data = request.get_json()
+    sensor = Sensor.query.get_or_404(sensor_id)
     
-    if not data.get('sensor_ids'):
-        return jsonify({'error': 'sensor_ids is required'}), 400
+    if sensor in task.sensors:
+        return jsonify({'error': 'Sensor already associated with this task'}), 400
     
-
-    sensors = Sensor.query.filter(Sensor.id.in_(data['sensor_ids'])).all()
-    
-    
-    if len(sensors) != len(data['sensor_ids']):
-        return jsonify({'error': 'One or more sensors not found'}), 404
-    
- 
-    task.sensors.extend(sensors)
+    task.sensors.append(sensor)
     db.session.commit()
     
     return jsonify(task.to_dict())
-
 
 @task_bp.route('/tasks/<int:task_id>/sensors/<int:sensor_id>', methods=['DELETE'])
 def remove_sensor_from_task(task_id, sensor_id):
     task = Task.query.get_or_404(task_id)
     sensor = Sensor.query.get_or_404(sensor_id)
+    print(task.sensors, "this is task")
     
     if sensor not in task.sensors:
         return jsonify({'error': 'Sensor not associated with this task'}), 404
