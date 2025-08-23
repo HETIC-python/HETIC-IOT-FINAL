@@ -1,10 +1,9 @@
 from flask import Blueprint, request, jsonify
 import requests
+from config import Config
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
-API_KEY = os.getenv('OPENWEATHER_API_KEY')
+API_KEY = Config.WEATHER_API_KEY
 
 weather_bp = Blueprint('weather', __name__)
 
