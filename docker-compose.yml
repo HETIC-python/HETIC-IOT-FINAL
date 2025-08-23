@@ -45,11 +45,12 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    command: redis-server --appendonly yes
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 1m30s
-      timeout: 30s
-      retries: 5
+      timeout: 10s
+      retries: 3
       start_period: 30s
 
   adminer:
