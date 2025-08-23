@@ -15,6 +15,7 @@ class Config:
 
     SECRET_KEY = 'test-secret-key'
     MAIL_DEFAULT_SENDER = 'example@gmail.com'
+    WEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
 
 
 class TestConfig:
