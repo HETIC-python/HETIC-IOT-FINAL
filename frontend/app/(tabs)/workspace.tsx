@@ -180,7 +180,7 @@ export default function Workspace() {
   return (
     <View className="flex-1 bg-gray-50">
       <Header title="My Workspaces" />
-      
+
       {/* <View className="p-4 flex-row justify-end">
         <TouchableOpacity
           onPress={() => setShowCreateModal(true)}
@@ -206,7 +206,7 @@ export default function Workspace() {
         //     <Text className="text-white font-semibold">Create Workspace</Text>
         //   </TouchableOpacity>
         // </View>
-        <Dashboard/>
+        <Dashboard />
       ) : (
         <FlatList
           data={workspaces}
@@ -227,7 +227,7 @@ export default function Workspace() {
               )}
               <View className="flex-row items-center mt-2">
                 <Text className="text-sm text-gray-500">
-                  {item.sensors?.length || 0} sensors
+                  {(item as any)?.sensors?.length || 0} sensors
                 </Text>
                 <Text className="text-primary-500 ml-auto">
                   View Dashboard →
