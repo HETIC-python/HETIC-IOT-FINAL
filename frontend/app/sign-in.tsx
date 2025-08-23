@@ -80,6 +80,14 @@ export default function SignIn() {
             onChangeText={setPassword}
             secureTextEntry
           />
+          <TouchableOpacity
+            className="mt-2"
+            onPress={() => router.push("/forgot-password")}
+          >
+            <Text className="text-primary-500 text-sm text-right">
+              Forgot Password?
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 

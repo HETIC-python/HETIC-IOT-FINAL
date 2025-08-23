@@ -39,18 +39,21 @@ def signup():
 
 @auth_bp.route('/signin', methods=['POST'])
 def signin():
-    schema = UserLoginSchema()
-    data = schema.load(request.get_json())
-    
-    user = User.query.filter_by(email=data['email']).first()
-    if not user or not AuthService.check_password(user, data['password']):
-        return jsonify({'error': 'Invalid credentials'}), 401
+    try:
+        schema = UserLoginSchema()
+        data = schema.load(request.get_json())
         
-    if not user.is_validated:
-        return jsonify({'error': 'Account not validated'}), 403
-        
-    token = AuthService.create_token(user.id)
-    return jsonify({'token': token})
+        user = User.query.filter_by(email=data['email']).first()
+        if not user or not AuthService.check_password(user, data['password']):
+            return jsonify({'error': 'Invalid credentials'}), 401
+            
+        if not user.is_validated:
+            return jsonify({'error': 'Account not validated'}), 403
+            
+        token = AuthService.create_token(user.id)
+        return jsonify({'token': token})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @auth_bp.route('/validate/<token>', methods=['GET'])
 def validate_account(token):
@@ -67,7 +70,7 @@ def validate_account(token):
         db.session.commit()
         return jsonify({'message': 'Account validated successfully'})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': "Invalid or expired token"}), 500
 
 @auth_bp.route('/forgot-password', methods=['POST'])
 def forgot_password():
