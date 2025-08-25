@@ -235,6 +235,15 @@ export default function WorkspacePage() {
 
         <TouchableOpacity 
           style={styles.actionButton}
+          onPress={() => router.push('/add-task')}
+        >
+          <Ionicons name="add-circle-outline" size={24} color={Colors.light.tint} />
+          <Text style={styles.actionButtonText}>Ajouter une tâche</Text>
+          <Ionicons name="chevron-forward" size={20} color={Colors.light.text} />
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.actionButton}
           onPress={() => router.push(`/workspace/${id}/settings`)}
         >
           <Ionicons name="settings-outline" size={24} color={Colors.light.tint} />

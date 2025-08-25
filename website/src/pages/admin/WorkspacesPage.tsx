@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { SERVER_API_URL } from "../../utils/api";
-import { CreateWorkspaceForm } from "../../components/workspaces/CreateWorkspaceForm";
 import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { CreateWorkspaceForm } from "../../components/workspaces/CreateWorkspaceForm";
+import { SERVER_API_URL } from "../../utils/api";
 
 interface Workspace {
   id: number;
@@ -15,6 +16,7 @@ interface Workspace {
 }
 
 export default function AdminWorkspacesPage() {
+  const navigate = useNavigate();
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,9 +57,6 @@ export default function AdminWorkspacesPage() {
           >
             <Plus className="w-5 h-5 mr-2" />
             New Workspace
-          </button>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-            Export Data
           </button>
         </div>
       </div>
@@ -103,7 +102,11 @@ export default function AdminWorkspacesPage() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {workspaces.map((workspace) => (
-                <tr key={workspace.id} className="hover:bg-gray-50">
+                <tr
+                  key={workspace.id}
+                  className="hover:bg-gray-50 cursor-pointer"
+                  onClick={() => navigate(`/admin/workspaces/${workspace.id}`)}
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div>
