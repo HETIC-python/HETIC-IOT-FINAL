@@ -34,7 +34,7 @@ def test_create_task(client):
     data = response.json
     assert "id" in data
 
-    # Verify task was created
+    
     created_task = Task.query.get(data["id"])
     assert created_task is not None
     assert created_task.name == task_data["name"]
@@ -53,11 +53,11 @@ def test_update_task(client, test_task):
     response = client.put(f"/api/tasks/{test_task.id}", json=update_data)
     assert response.status_code == 200
 
-    # Verify changes
+
     updated_task = Task.query.get(test_task.id)
     assert updated_task.name == update_data["name"]
     assert updated_task.status == update_data["status"]
-    # Original description should remain unchanged
+   
     assert updated_task.description == test_task.description
 
 
@@ -66,7 +66,7 @@ def test_delete_task(client, test_task):
     response = client.delete(f"/api/tasks/{test_task.id}")
     assert response.status_code == 200
 
-    # Verify task was deleted
+   
     deleted_task = Task.query.get(test_task.id)
     assert deleted_task is None
 
@@ -77,10 +77,10 @@ def test_add_sensor_to_task(client, test_task, test_sensor):
     assert response.status_code == 200
 
     data = response.json
-    # Verify the sensor was added
+   
     assert any(s["id"] == test_sensor.id for s in data["sensors"])
 
-    # Verify attempting to add the same sensor again fails
+    
     response = client.post(f"/api/tasks/{test_task.id}/sensors/{test_sensor.id}")
     assert response.status_code == 400
     assert "error" in response.json
@@ -88,11 +88,11 @@ def test_add_sensor_to_task(client, test_task, test_sensor):
 
 def test_add_sensor_to_task_invalid_ids(client, test_task):
     """Test adding a sensor with invalid IDs"""
-    # Test invalid task ID
+    
     response = client.post(f"/api/tasks/999/sensors/1")
     assert response.status_code == 404
 
-    # Test invalid sensor ID
+
     response = client.post(f"/api/tasks/{test_task.id}/sensors/999")
     assert response.status_code == 404
 
