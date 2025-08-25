@@ -1,13 +1,6 @@
+import { TemperatureSensorProps } from '@/src/utils/Interfaces';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-
-interface TemperatureSensorProps {
-  sensorId: string;
-  temperature: number;
-  humidity: number;
-  time: string;
-  width: number;
-}
 
 export default function TemperatureSensor({ sensorId, temperature, humidity, time, width }: TemperatureSensorProps) {
   const getTemperatureColor = (temp: number) => {

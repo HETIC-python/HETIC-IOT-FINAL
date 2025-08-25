@@ -8,14 +8,7 @@ import {
     useWindowDimensions,
 } from "react-native";
 import TemperatureSensor from "./sensors/TemperatureSensor";
-
-interface SensorData {
-  temperature: number;
-  humidity: number;
-  battery?: number;
-  time: string;
-  sensor_id: string;
-}
+import { SensorData } from "@/src/utils/Interfaces";
 
 export default function Dashboard() {
   const { width } = useWindowDimensions();
