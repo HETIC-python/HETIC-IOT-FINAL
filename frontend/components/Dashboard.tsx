@@ -1,102 +1,208 @@
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SERVER_API_URL } from "@/config/api";
+import React, { useEffect, useState } from "react";
+import {
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+    useWindowDimensions,
+} from "react-native";
+import TemperatureSensor from "./sensors/TemperatureSensor";
+
+interface SensorData {
+  temperature: number;
+  humidity: number;
+  battery?: number;
+  time: string;
+  sensor_id: number;
+}
 
 export default function Dashboard() {
-  const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const padding = 16;
+  const gap = 16;
+  const numColumns = width > 768 ? 2 : 1;
+  const boxWidth = (width - padding * 2 - gap * (numColumns - 1)) / numColumns;
+
+  const [sensorData, setSensorData] = useState<Record<string, SensorData>>({
+    jiad: {
+      temperature: 22,
+      humidity: 60,
+      battery: 80,
+      time: "2023-10-01T12:00:00Z",
+      sensor_id: 1042691358,
+    },
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getWorkspaceData = async () => {
+    try {
+      const response = await fetch(`${SERVER_API_URL}/api/workspaces/5`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch workspace data");
+      }
+      const data = await response.json();
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching workspace data:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const fetchSensorData = async () => {
+      try {
+        // Fetch data for each sensor (assuming IDs 1, 2, 3 for Ruuvi tags)
+        const sensorIds = [1042691358, 1042691359, 1042691360];
+        const workspace = await getWorkspaceData();
+        if (!workspace) {
+          console.error("Failed to fetch workspace data");
+          return;
+        }
+        const data = await Promise.all(
+          workspace?.sensors.map(async (id: string) => {
+            try {
+              const response = await fetch(
+                `${SERVER_API_URL}/api/analytics/sensor/${id}`
+              );
+              if (!response.ok) {
+                console.error(
+                  `Failed to fetch sensor ${id}: ${response.status}`
+                );
+                return {};
+              }
+              return await response.json();
+            } catch (error) {
+              console.error(`Error fetching sensor ${id}:`, error);
+              return {};
+            }
+          })
+        );
+
+        console.log(data);
+
+        const newSensorData: Record<string, SensorData> = {};
+        data.forEach((sensorInfo, index) => {
+          newSensorData[sensorIds[index]] = sensorInfo;
+        });
+
+        console.log(newSensorData, data);
+        setSensorData(newSensorData);
+      } catch (error) {
+        console.error("Error fetching sensor data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSensorData();
+    const interval = setInterval(fetchSensorData, 30000); // Update every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-900" edges={['bottom']}>
-      <ScrollView
-        className="px-4 pt-2"
-        contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
-      >
-        {/* Header */}
-        <Text className="text-black text-[22px] font-semibold mb-3">Accueil</Text>
+    <View style={[styles.container]}>
+      <ScrollView contentContainerStyle={[styles.scrollContainer]}>
+        <Text style={[styles.titleDash]}>IoT Dashboard</Text>
 
-        {/* Cartes Capteurs : Chambre / Bureau */}
-        <View className="w-full flex-row flex-wrap -mx-1 mb-4">
-          {/* Chambre */}
-          <View className="bg-black rounded-2xl flex-1 min-w-[160] mx-1 p-4 mb-2">
-            <View className="flex-row items-center mb-2">
-              <Ionicons name="home" size={30} color="black" />
-              <Text className="text-black font-semibold ml-2">Chambre</Text>
-            </View>
-            <Text className="text-black text-3xl font-semibold">21,5°C</Text>
-
-            <View className="flex-row mt-2">
-              <View className="bg-black/10 rounded-full px-2 py-1 mr-2">
-                <Text className="text-black text-xs">52%</Text>
-              </View>
-              <View className="bg-green-600/25 rounded-full px-2 py-1">
-                <Text className="text-green-400 text-xs">Actif</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Bureau */}
-          <View className="bg-black rounded-2xl flex-1 min-w-[160] mx-1 p-4 mb-2">
-            <View className="flex-row items-center mb-2">
-              <Ionicons name="briefcase" size={30} color="black" />
-              <Text className="text-black font-semibold ml-2">Bureau</Text>
-            </View>
-            <Text className="text-black text-3xl font-semibold">22,5°C</Text>
-
-            <View className="flex-row mt-2">
-              <View className="bg-black/10 rounded-full px-2 py-1 mr-2">
-                <Text className="text-black text-xs">52%</Text>
-              </View>
-              <View className="bg-black/10 rounded-full px-2 py-1">
-                <Text className="text-gray-300 text-xs">Calme</Text>
-              </View>
-            </View>
-          </View>
+        {/* Raspberry Pi Status */}
+        <View style={[styles.box, styles.fullWidthBox]}>
+          <Text style={[styles.boxText]}>Raspberry Pi Gateway</Text>
+          <Text style={[styles.statusText]}>● Online</Text>
         </View>
 
-        {/* Résumé IA de la journée */}
-        <View className="bg-black rounded-2xl w-full p-4 mb-4">
-          <View className="flex-row items-center mb-1">
-            <Ionicons name="chatbox-outline" size={30} color="black" />
-            <Text className="text-black font-semibold ml-2">Résumé IA de la journée</Text>
-          </View>
-          <Text className="text-gray-400">
-            La température dans la chambre est restée stable aujourd’hui.
+        {/* Temperature Sensors Grid */}
+        <View style={[styles.grid]}>
+          {Object.entries(sensorData).map(([sensorId, data]) => (
+            <TemperatureSensor
+              key={sensorId}
+              sensorId={sensorId}
+              temperature={data.temperature}
+              humidity={data.humidity}
+              time={data.time}
+              width={boxWidth}
+            />
+          ))}
+        </View>
+
+        {/* System Status */}
+        <View style={[styles.box, styles.fullWidthBox]}>
+          <Text style={[styles.boxText]}>System Status</Text>
+          <Text style={[styles.summaryText]}>
+            {Object.values(sensorData).some((data) => data.temperature > 25)
+              ? "⚠️ High temperature detected"
+              : "✅ All systems normal"}
           </Text>
         </View>
-
-        {/* Alertes (2 tuiles colorées) */}
-        <View className="w-full flex-row flex-wrap -mx-1 mb-4">
-          <View className="rounded-2xl flex-1 min-w-[160] mx-1 p-3 mb-2 bg-orange-600/20">
-            <View className="flex-row items-center mb-1">
-              <View className="bg-orange-500/30 rounded-full p-1 mr-2">
-                <Ionicons name="thermometer" size={14} color="#fb923c" />
-              </View>
-              <Text className="text-orange-300 font-semibold">Température élevée</Text>
-            </View>
-            <Text className="text-orange-200">dans la chambre</Text>
-          </View>
-
-          <View className="rounded-2xl flex-1 min-w-[160] mx-1 p-3 mb-2 bg-rose-600/20">
-            <View className="flex-row items-center mb-1">
-              <View className="bg-rose-500/30 rounded-full p-1 mr-2">
-                <Ionicons name="thermometer" size={14} color="#f43f5e" />
-              </View>
-              <Text className="text-rose-300 font-semibold">Température moins élevée</Text>
-            </View>
-            <Text className="text-rose-200">au bureau</Text>
-          </View>
-        </View>
-
-        {/* Dernier mouvement détecté */}
-        <View className="bg-black rounded-2xl w-full p-4 mb-4">
-          <View className="flex-row items-center mb-1">
-            <Ionicons name="man-outline" size={30} color="black" />
-            <Text className="text-black font-semibold ml-2">Dernier mouvement détecté</Text>
-          </View>
-          <Text className="text-gray-400">Calme depuis 3h</Text>
-        </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollContainer: {
+    padding: 16,
+    paddingBottom: 100,
+  },
+  titleDash: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: 16,
+    marginBottom: 16,
+  },
+  box: {
+    backgroundColor: "black",
+    borderRadius: 15,
+    padding: 16,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullWidthBox: {
+    width: "100%",
+    marginBottom: 16,
+    minHeight: 120,
+  },
+  boxText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  summaryText: {
+    color: "gray",
+    textAlign: "center",
+    marginTop: 8,
+  },
+  statusText: {
+    color: "#4ade80",
+    fontSize: 14,
+    marginTop: 4,
+  },
+  dataText: {
+    color: "white",
+    fontSize: 24,
+    fontWeight: "bold",
+    marginTop: 8,
+  },
+  subText: {
+    color: "#9ca3af",
+    fontSize: 14,
+    marginTop: 4,
+  },
+  timeText: {
+    color: "#6b7280",
+    fontSize: 12,
+    marginTop: 8,
+  },
+});
