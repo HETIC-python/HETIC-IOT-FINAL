@@ -17,6 +17,12 @@ services:
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
       - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+      - INFLUXDB_URL=${INFLUXDB_URL}
+      - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
+      - INFLUXDB_ORG=${INFLUXDB_ORG}
+      - INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
+      - INFLUXDB_MEASUREMENT=${INFLUXDB_MEASUREMENT}
+
     depends_on:
       - db
       - redis
@@ -45,12 +51,11 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    command: redis-server --appendonly yes
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 1m30s
-      timeout: 10s
-      retries: 3
+      timeout: 30s
+      retries: 5
       start_period: 30s
 
   adminer:
