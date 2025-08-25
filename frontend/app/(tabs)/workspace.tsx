@@ -207,34 +207,38 @@ export default function Workspace() {
         // </View>
         <Dashboard />
       ) : (
-        <FlatList
-          data={workspaces}
-          keyExtractor={(item) => item.id}
-          contentContainerClassName="p-4"
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              className="bg-white rounded-xl mb-3 p-4 shadow-sm border border-gray-100 active:opacity-70"
-              onPress={() => handleWorkspacePress(item.id)}
-            >
-              <Text className="text-lg font-semibold text-gray-800 mb-1">
-                {item.name}
-              </Text>
-              {item.description && (
-                <Text className="text-gray-600 text-sm">
-                  {item.description}
+        <View>
+          <Dashboard />
+
+          {/* <FlatList
+            data={workspaces}
+            keyExtractor={(item) => item.id}
+            contentContainerClassName="p-4"
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                className="bg-white rounded-xl mb-3 p-4 shadow-sm border border-gray-100 active:opacity-70"
+                onPress={() => handleWorkspacePress(item.id)}
+              >
+                <Text className="text-lg font-semibold text-gray-800 mb-1">
+                  {item.name}
                 </Text>
-              )}
-              <View className="flex-row items-center mt-2">
-                <Text className="text-sm text-gray-500">
-                  {item.sensors?.length || 0} sensors
-                </Text>
-                <Text className="text-primary-500 ml-auto">
-                  View Dashboard →
-                </Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
+                {item.description && (
+                  <Text className="text-gray-600 text-sm">
+                    {item.description}
+                  </Text>
+                )}
+                <View className="flex-row items-center mt-2">
+                  <Text className="text-sm text-gray-500">
+                    {(item as any)?.sensors?.length || 0} sensors
+                  </Text>
+                  <Text className="text-primary-500 ml-auto">
+                    View Dashboard →
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          /> */}
+        </View>
       )}
 
       <CreateWorkspaceModal

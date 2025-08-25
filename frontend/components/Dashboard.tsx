@@ -14,7 +14,7 @@ interface SensorData {
   humidity: number;
   battery?: number;
   time: string;
-  sensor_id: number;
+  sensor_id: string;
 }
 
 export default function Dashboard() {
@@ -24,20 +24,12 @@ export default function Dashboard() {
   const numColumns = width > 768 ? 2 : 1;
   const boxWidth = (width - padding * 2 - gap * (numColumns - 1)) / numColumns;
 
-  const [sensorData, setSensorData] = useState<Record<string, SensorData>>({
-    jiad: {
-      temperature: 22,
-      humidity: 60,
-      battery: 80,
-      time: "2023-10-01T12:00:00Z",
-      sensor_id: 1042691358,
-    },
-  });
+  const [sensorData, setSensorData] = useState<SensorData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const getWorkspaceData = async () => {
+  const getWorkspaceData = async (id: string) => {
     try {
-      const response = await fetch(`${SERVER_API_URL}/api/workspaces/5`);
+      const response = await fetch(`${SERVER_API_URL}/api/workspaces/${id}`);
       if (!response.ok) {
         throw new Error("Failed to fetch workspace data");
       }
@@ -53,9 +45,8 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchSensorData = async () => {
       try {
-        // Fetch data for each sensor (assuming IDs 1, 2, 3 for Ruuvi tags)
         const sensorIds = [1042691358, 1042691359, 1042691360];
-        const workspace = await getWorkspaceData();
+        const workspace = await getWorkspaceData("1");
         if (!workspace) {
           console.error("Failed to fetch workspace data");
           return;
@@ -82,13 +73,13 @@ export default function Dashboard() {
 
         console.log(data);
 
-        const newSensorData: Record<string, SensorData> = {};
-        data.forEach((sensorInfo, index) => {
-          newSensorData[sensorIds[index]] = sensorInfo;
-        });
+        // const newSensorData = {};
+        // data.forEach((sensorInfo, index) => {
+        //   newSensorData[sensorIds[index]] = sensorInfo;
+        // });
 
-        console.log(newSensorData, data);
-        setSensorData(newSensorData);
+        // console.log(newSensorData, data);
+        setSensorData(data);
       } catch (error) {
         console.error("Error fetching sensor data:", error);
       } finally {
@@ -97,7 +88,7 @@ export default function Dashboard() {
     };
 
     fetchSensorData();
-    const interval = setInterval(fetchSensorData, 30000); // Update every 30 seconds
+    const interval = setInterval(fetchSensorData, 30000);
 
     return () => clearInterval(interval);
   }, []);
@@ -107,18 +98,16 @@ export default function Dashboard() {
       <ScrollView contentContainerStyle={[styles.scrollContainer]}>
         <Text style={[styles.titleDash]}>IoT Dashboard</Text>
 
-        {/* Raspberry Pi Status */}
         <View style={[styles.box, styles.fullWidthBox]}>
           <Text style={[styles.boxText]}>Raspberry Pi Gateway</Text>
           <Text style={[styles.statusText]}>● Online</Text>
         </View>
 
-        {/* Temperature Sensors Grid */}
         <View style={[styles.grid]}>
-          {Object.entries(sensorData).map(([sensorId, data]) => (
+          {sensorData.map((data) => (
             <TemperatureSensor
-              key={sensorId}
-              sensorId={sensorId}
+              key={data.sensor_id}
+              sensorId={data.sensor_id}
               temperature={data.temperature}
               humidity={data.humidity}
               time={data.time}
@@ -127,7 +116,6 @@ export default function Dashboard() {
           ))}
         </View>
 
-        {/* System Status */}
         <View style={[styles.box, styles.fullWidthBox]}>
           <Text style={[styles.boxText]}>System Status</Text>
           <Text style={[styles.summaryText]}>
