@@ -6,7 +6,8 @@ from .sensor.sensor_routes import sensor_bp
 from .task.task_routes import task_bp
 from .user.user_routes import user_bp
 from .workspace.workspace_routes import workspace_bp
-
+from .weather.weather_route import weather_bp
+from .analytics.analytics_routes import analytics_bp
 main = Blueprint("main", __name__)
 
 
@@ -18,3 +19,5 @@ def register_blueprints(app):
     app.register_blueprint(user_bp, url_prefix="/api")
     app.register_blueprint(workspace_bp, url_prefix="/api")
     app.register_blueprint(sensor_bp, url_prefix="/api")
+    app.register_blueprint(weather_bp, url_prefix="/api")
+    app.register_blueprint(analytics_bp, url_prefix="/api")
