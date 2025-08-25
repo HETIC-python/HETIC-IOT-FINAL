@@ -131,24 +131,24 @@ def create_workspace():
         return jsonify({'error': 'Server Error', 'message': 'An unexpected error occurred'}), 500
 
 
-@workspace_bp.route("/workspaces", methods=["POST"])
-def create_workspace():
-    try:
-        data = request.get_json()
-        workspace = Workspace(
-            user_id=data.get("user_id", 1),
-            name=data.get("name"),
-            description=data.get("description"),
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
-            is_active=data.get("is_active", True),
-        )
-        db.session.add(workspace)
-        db.session.commit()
-        return jsonify({"message": "Workspace created", "id": workspace.id}), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 400
+# @workspace_bp.route("/workspaces", methods=["POST"])
+# def create_workspace():
+#     try:
+#         data = request.get_json()
+#         workspace = Workspace(
+#             user_id=data.get("user_id", 1),
+#             name=data.get("name"),
+#             description=data.get("description"),
+#             created_at=datetime.utcnow(),
+#             updated_at=datetime.utcnow(),
+#             is_active=data.get("is_active", True),
+#         )
+#         db.session.add(workspace)
+#         db.session.commit()
+#         return jsonify({"message": "Workspace created", "id": workspace.id}), 201
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify({"error": str(e)}), 400
 
 
 @workspace_bp.route("/workspaces/<int:workspace_id>", methods=["PUT"])
