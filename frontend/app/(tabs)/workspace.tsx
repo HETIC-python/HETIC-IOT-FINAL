@@ -1,5 +1,4 @@
 import Dashboard from "@/components/Dashboard";
-import Dashboard from "@/components/Dashboard";
 import { SERVER_API_URL } from "@/config/api";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
