@@ -4,11 +4,10 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  FlatList,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
@@ -227,7 +226,7 @@ export default function Workspace() {
               )}
               <View className="flex-row items-center mt-2">
                 <Text className="text-sm text-gray-500">
-                  {(item as any)?.sensors?.length || 0} sensors
+                  {item.sensors?.length || 0} sensors
                 </Text>
                 <Text className="text-primary-500 ml-auto">
                   View Dashboard →
