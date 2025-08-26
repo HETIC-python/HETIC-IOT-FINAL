@@ -28,7 +28,6 @@ services:
     depends_on:
       - db
       - redis
-      - redis
     volumes:
       - ./backend:/usr/src/app
 
@@ -60,24 +59,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
-  redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 1m30s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
 
   adminer:
     image: adminer
@@ -90,13 +71,7 @@ services:
       - ADMINER_DEFAULT_SYSTEM=pgsql
       - ADMINER_DESIGN_USER=postgres
       - ADMINER_DESIGN_PASSWORD=postgres
-    environment:
-      - ADMINER_DESIGN_DB=iot_db
-      - ADMINER_DEFAULT_SYSTEM=pgsql
-      - ADMINER_DESIGN_USER=postgres
-      - ADMINER_DESIGN_PASSWORD=postgres
 
 volumes:
   db_data:
-  redis_data:
   redis_data:
