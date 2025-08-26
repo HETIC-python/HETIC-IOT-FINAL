@@ -11,9 +11,10 @@ import "../global.css";
 import { AuthProvider, useAuth } from "../src/context/AuthContext";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { WorkspaceProvider } from "@/src/context/WorkspaceContext";
 
 function RootLayoutNav() {
-  const { token } = useAuth();
+  const { isSignedIn } = useAuth();
 
   return (
     <Stack
@@ -21,10 +22,11 @@ function RootLayoutNav() {
         headerShown: false,
       }}
     >
-      {token ? (
+      {isSignedIn ? (
         <Stack.Screen name="(tabs)" options={{ headerShown: true }} />
       ) : (
         <>
+          <Stack.Screen name="workspace" options={{ headerShown: false }} />
           <Stack.Screen name="sign-in" options={{ headerShown: true }} />
           <Stack.Screen name="sign-up" options={{ headerShown: true }} />
         </>
@@ -40,15 +42,16 @@ export default function RootLayout() {
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 
   return (
     <AuthProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <RootLayoutNav />
-        <StatusBar style="auto" />
+        <WorkspaceProvider>
+          <RootLayoutNav />
+          <StatusBar style="auto" />
+        </WorkspaceProvider>
       </ThemeProvider>
     </AuthProvider>
   );
