@@ -12,7 +12,7 @@ import {
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
 
-type Workspace = {
+type IWorkspace = {
   id: string;
   name: string;
   description: string;
@@ -111,7 +111,7 @@ function CreateWorkspaceModal({
 }
 
 export default function Workspace() {
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [workspaces, setWorkspaces] = useState<IWorkspace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();

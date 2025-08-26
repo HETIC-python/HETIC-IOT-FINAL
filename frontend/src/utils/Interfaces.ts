@@ -12,4 +12,5 @@ export interface SensorData {
     battery?: number;
     time: string;
     sensor_id: string;
+    source_address: string;
 }
