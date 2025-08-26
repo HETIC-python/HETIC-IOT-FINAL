@@ -39,7 +39,7 @@ class MailService:
             html=html,
             sender=("Sentio IoT", mail_config["MAIL_DEFAULT_SENDER"]),
         )
-        mail.send(msg)
+        #mail.send(msg)
 
     @staticmethod
     def send_validation_email(email, token):
