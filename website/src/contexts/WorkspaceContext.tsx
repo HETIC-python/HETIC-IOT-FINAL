@@ -77,7 +77,6 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     
     try {
       const token = localStorage.getItem('token');
-      console.log('Refreshing workspace with ID:', currentWorkspace.id, currentWorkspace);
       const response = await fetch(`${SERVER_API_URL}/api/workspaces/${currentWorkspace.id}`, {
         headers: {
           Authorization: `Bearer ${token}`,

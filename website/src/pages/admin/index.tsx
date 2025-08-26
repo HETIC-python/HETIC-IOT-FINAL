@@ -48,6 +48,13 @@ const AdminDashboard: React.FC = () => {
           <h2 className="text-lg font-semibold">Sensor Management</h2>
           <p className="text-gray-600">Manage IoT sensors</p>
         </Link>
+        <Link
+          to="/admin/tasks"
+          className="p-4 bg-white shadow rounded hover:shadow-lg transition-shadow"
+        >
+          <h2 className="text-lg font-semibold">Task Management</h2>
+          <p className="text-gray-600">Manage tasks and assignments</p>
+        </Link>
       </div>
     </div>
   );
