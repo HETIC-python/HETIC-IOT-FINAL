@@ -23,6 +23,7 @@ interface CreateSensorModalProps {
 
 function CreateSensorModal({ isOpen, onClose, onSuccess }: CreateSensorModalProps) {
   const [name, setName] = useState("");
+  const [sourceId, setSourceId] = useState("");
   const [workspaceId, setWorkspaceId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
@@ -64,6 +65,7 @@ function CreateSensorModal({ isOpen, onClose, onSuccess }: CreateSensorModalProp
           name,
           workspace_id: workspaceId,
           status: "active",
+          source_id: sourceId,
         }),
       });
 
@@ -90,6 +92,18 @@ function CreateSensorModal({ isOpen, onClose, onSuccess }: CreateSensorModalProp
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Source Id
+            </label>
+            <input
+              type="text"
+              value={sourceId}
+              onChange={(e) => setSourceId(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md"
               required
             />
