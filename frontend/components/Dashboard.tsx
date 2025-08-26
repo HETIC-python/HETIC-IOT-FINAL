@@ -43,6 +43,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if(!currentWorkspace) return;
+    console.log("workspace changed", currentWorkspace)
     const fetchSensorData = async () => {
       try {
         const sensorIds = [1042691358, 1042691359, 1042691360];
@@ -108,7 +109,7 @@ export default function Dashboard() {
         <View style={[styles.grid]}>
           {sensorData.map((data, id) => (
             <TemperatureSensor
-              key={`${data.source_address}`}
+              key={`${data.source_address}_${id}`}
               sensorId={data.source_address}
               temperature={data.temperature}
               humidity={data.humidity}
