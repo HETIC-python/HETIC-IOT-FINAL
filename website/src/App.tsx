@@ -4,6 +4,7 @@ import { PrivateRoute } from "./components/auth/PrivateRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import { WorkspaceProvider } from "./contexts/WorkspaceContext";
 import AdminDashboard from "./pages/admin";
+import OrdersPage from "./pages/admin/OrdersPage";
 import SensorsPage from "./pages/admin/SensorsPage";
 import TaskPage from "./pages/admin/TaskPage";
 import AdminUserDetails from "./pages/admin/UserDetails";
@@ -95,6 +96,14 @@ function App() {
               element={
                 <PrivateRoute requiredRole="admin">
                   <TaskPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/admin/orders"
+              element={
+                <PrivateRoute requiredRole="admin">
+                  <OrdersPage />
                 </PrivateRoute>
               }
             />
