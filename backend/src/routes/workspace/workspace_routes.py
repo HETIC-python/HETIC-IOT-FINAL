@@ -64,7 +64,7 @@ def get_workspace(workspace_id):
             'id': workspace.id,
             'user_id': workspace.user_id,
             'sensors': [
-                {'id': s.id, 'name': s.name} for s in workspace.sensors
+                {'id': s.id, 'name': s.name, 'source_id': s.source_id} for s in workspace.sensors
             ],
             'name': workspace.name,
             'description': workspace.description,
@@ -101,7 +101,6 @@ def create_workspace():
         
         # Création du workspace
         workspace = Workspace(
-            # user_id=data.get('user_id', 1),
             name=data['name'].strip(),
             description=data['description'].strip(),
             created_at=data.get('created_at'),
