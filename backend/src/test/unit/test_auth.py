@@ -13,6 +13,7 @@ def test_password_hashing():
 
 def test_token_creation_and_verification(app):
     with app.app_context():
+        
         user_id = 1
         token = AuthService.create_token(user_id, expiry_minutes=30)
         decoded = AuthService.verify_token(token)
@@ -35,6 +36,8 @@ class TestAuthRoutes:
     def test_signup_success(self, client, app):
         with app.app_context():
             response = client.post('/api/auth/signup', json={
+                'firstName' : 'User',
+                'lastName' : 'Test',
                 'username': 'newtestuser',
                 'email': 'newtest@example.com',
                 'password': 'password123'
@@ -45,12 +48,16 @@ class TestAuthRoutes:
     def test_signup_duplicate_email(self, client, app):
         # First signup
         client.post('/api/auth/signup', json={
+            'firstName' : 'User',
+            'lastName' : 'Test',
             'username': 'testuser1',
             'email': 'test@example.com',
             'password': 'password123'
         })
         # Duplicate email signup
         response = client.post('/api/auth/signup', json={
+            'firstName' : 'User',
+            'lastName' : 'Test',
             'username': 'testuser2',
             'email': 'test@example.com',
             'password': 'password123'
@@ -71,6 +78,8 @@ class TestAuthRoutes:
         with app.app_context():
             # Create unvalidated user
             client.post('/api/auth/signup', json={
+                'firstName' : 'User',
+                'lastName' : 'Test',
                 'username': 'unvalidated',
                 'email': 'unvalidated@example.com',
                 'password': 'password123'
@@ -129,6 +138,8 @@ class TestAuthRoutes:
         with app.app_context():
             # Create unvalidated user
             signup_response = client.post('/api/auth/signup', json={
+                'firstName' : 'User',
+                'lastName' : 'Test',
                 'username': 'newtestuser',
                 'email': 'newtest@example.com',
                 'password': 'password123'
