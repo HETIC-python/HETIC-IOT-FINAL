@@ -1,9 +1,14 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
+from src.extensions import db
 from src.models import User
+from src.schemas.user_schema import UserLoginSchema, UserSignupSchema
 from src.service.auth_service import AuthService
 from src.service.mail_service import MailService
-from src.schemas.user_schema import UserSignupSchema, UserLoginSchema
-from src.extensions import db
+import logging
+
+# Configuration du logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -15,6 +20,9 @@ def signup():
         
         if User.query.filter_by(email=data['email']).first():
             return jsonify({'error': 'Email already exists'}), 400
+            
+        if User.query.filter_by(username=data['username']).first():
+            return jsonify({'error': 'Username already exists'}), 400
 
         user = User(
             username=data['username'],
@@ -32,22 +40,73 @@ def signup():
         return jsonify({'message': 'User created, validation email sent'}), 201
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Erreur lors de l'inscription: {str(e)}")
+        return jsonify({'error': 'Server Error', 'message': 'Unable to create user'}), 500
 
 @auth_bp.route('/signin', methods=['POST'])
 def signin():
-    schema = UserLoginSchema()
-    data = schema.load(request.get_json())
-    
-    user = User.query.filter_by(email=data['email']).first()
-    if not user or not AuthService.check_password(user, data['password']):
-        return jsonify({'error': 'Invalid credentials'}), 401
+    try:
+        schema = UserLoginSchema()
+        data = schema.load(request.get_json())
         
-    if not user.is_validated:
-        return jsonify({'error': 'Account not validated'}), 403
+        user = User.query.filter_by(email=data['email']).first()
+        if not user or not AuthService.check_password(user, data['password']):
+            return jsonify({'error': 'Invalid credentials'}), 401
+            
+        if not user.is_validated:
+            return jsonify({'error': 'Account not validated'}), 403
+            
+        token = AuthService.create_token(user.id)
+        return jsonify({'token': token})
+    except Exception as e:
+        logger.error(f"Erreur lors de la connexion: {str(e)}")
+        return jsonify({'error': 'Server Error', 'message': 'Unable to authenticate user'}), 500
+
+@auth_bp.route('/me', methods=['GET'])
+def get_current_user():
+    """Récupère les informations de l'utilisateur connecté"""
+    try:
+        # Récupérer le token depuis le header Authorization
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({'error': 'Unauthorized', 'message': 'Missing or invalid authorization header'}), 401
         
-    token = AuthService.create_token(user.id)
-    return jsonify({'token': token})
+        token = auth_header.split(' ')[1]
+        
+        # Vérifier et décoder le token
+        decoded = AuthService.verify_token(token)
+        if not decoded:
+            return jsonify({'error': 'Unauthorized', 'message': 'Invalid or expired token'}), 401
+        
+        user_id = decoded.get('user_id')
+        if not user_id:
+            return jsonify({'error': 'Unauthorized', 'message': 'Invalid token format'}), 401
+        
+        # Récupérer l'utilisateur
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'Not Found', 'message': 'User not found'}), 404
+        
+        # Retourner les informations de l'utilisateur (sans le mot de passe)
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'is_validated': user.is_validated,
+            'role': user.role,
+            'created_at': user.created_at.isoformat() if user.created_at else None,
+            'address_line': user.address_line,
+            'city': user.city,
+            'postal_code': user.postal_code,
+            'country': user.country
+        }
+        
+        logger.info(f"Informations utilisateur récupérées avec succès pour l'utilisateur {user.id}")
+        return jsonify({'user': user_data})
+        
+    except Exception as e:
+        logger.error(f"Erreur lors de la récupération des informations utilisateur: {str(e)}")
+        return jsonify({'error': 'Server Error', 'message': 'Unable to retrieve user information'}), 500
 
 @auth_bp.route('/validate/<token>', methods=['GET'])
 def validate_account(token):
@@ -64,7 +123,8 @@ def validate_account(token):
         db.session.commit()
         return jsonify({'message': 'Account validated successfully'})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Erreur lors de la validation du compte: {str(e)}")
+        return jsonify({'error': 'Server Error', 'message': 'Unable to validate account'}), 500
 
 @auth_bp.route('/forgot-password', methods=['POST'])
 def forgot_password():
@@ -81,7 +141,8 @@ def forgot_password():
         
         return jsonify({'message': 'Password reset instructions sent'})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Erreur lors de la demande de réinitialisation de mot de passe: {str(e)}")
+        return jsonify({'error': 'Server Error', 'message': 'Unable to process password reset request'}), 500
 
 @auth_bp.route('/reset-password/<token>', methods=['POST'])
 def reset_password(token):
@@ -105,4 +166,5 @@ def reset_password(token):
         
         return jsonify({'message': 'Password updated successfully'})
     except Exception as e:
-        return jsonify({'error': str(e)}), 400
+        logger.error(f"Erreur lors de la réinitialisation du mot de passe: {str(e)}")
+        return jsonify({'error': 'Server Error', 'message': 'Unable to reset password'}), 500

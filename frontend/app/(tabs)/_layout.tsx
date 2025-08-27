@@ -20,8 +20,12 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 10,
           fontWeight: "500",
+          marginBottom: 4,
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
         },
         tabBarStyle: Platform.select({
           ios: {
@@ -29,11 +33,14 @@ export default function TabLayout() {
             backgroundColor: Colors.dark.background,
             borderTopWidth: 1,
             borderTopColor: Colors.dark.border,
+            height: 80,
+            paddingBottom: 20,
           },
           default: {
             backgroundColor: Colors.dark.background,
             borderTopWidth: 1,
             borderTopColor: Colors.dark.border,
+            height: 60,
           },
         }),
       }}
@@ -43,7 +50,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={24} name="paperplane.fill" color={color} />
+            <IconSymbol name="home" color={color} />
           ),
         }}
       />
@@ -52,7 +59,7 @@ export default function TabLayout() {
         options={{
           title: "Assistant",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={24} name="paperplane.fill" color={color} />
+            <IconSymbol name="chatbubble" color={color} />
           ),
         }}
       />
@@ -61,7 +68,16 @@ export default function TabLayout() {
         options={{
           title: "Settings",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={24} name="paperplane.fill" color={color} />
+            <IconSymbol name="settings" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol name="person" color={color} />
           ),
         }}
       />
