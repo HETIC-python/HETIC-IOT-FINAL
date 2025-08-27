@@ -11,19 +11,8 @@ import {
 } from "react-native";
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
-
-type Workspace = {
-  id: string;
-  name: string;
-  description: string;
-  is_active: boolean;
-};
-
-interface CreateWorkspaceModalProps {
-  isVisible: boolean;
-  onClose: () => void;
-  onSubmit: (data: { name: string; description: string }) => Promise<void>;
-}
+import { Workspace } from "@/src/utils/Types";
+import { CreateWorkspaceModalProps } from "@/src/utils/Interfaces";
 
 function CreateWorkspaceModal({
   isVisible,
