@@ -13,6 +13,7 @@ import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
 import { Workspace } from "@/src/utils/Types";
 import { CreateWorkspaceModalProps } from "@/src/utils/Interfaces";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function CreateWorkspaceModal({
   isVisible,
@@ -98,6 +99,16 @@ function CreateWorkspaceModal({
     </View>
   );
 }
+
+const queryClient = new QueryClient({
+  defaultOptions:{
+    queries:{
+      retry: 1,
+      staleTime: 15_000,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function Workspace() {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
@@ -194,10 +205,14 @@ export default function Workspace() {
         //     <Text className="text-white font-semibold">Create Workspace</Text>
         //   </TouchableOpacity>
         // </View>
-        <Dashboard />
+        <QueryClientProvider client={queryClient}>
+          <Dashboard />
+        </QueryClientProvider>
       ) : (
         <View>
-          <Dashboard />
+          <QueryClientProvider client={queryClient}>
+            <Dashboard />
+          </QueryClientProvider>
 
           {/* <FlatList
             data={workspaces}
