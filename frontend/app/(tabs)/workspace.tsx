@@ -12,19 +12,9 @@ import {
 } from "react-native";
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
-
-type IWorkspace = {
-  id: string;
-  name: string;
-  description: string;
-  is_active: boolean;
-};
-
-interface CreateWorkspaceModalProps {
-  isVisible: boolean;
-  onClose: () => void;
-  onSubmit: (data: { name: string; description: string }) => Promise<void>;
-}
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { IWorkspace } from "@/src/utils/Types";
+import { CreateWorkspaceModalProps } from "@/src/utils/Interfaces";
 
 function CreateWorkspaceModal({
   isVisible,
@@ -128,6 +118,17 @@ function ListWorkspace() {
     </View>
   );
 }
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 15_000,
+      refetchOnWindowFocus: false
+    }
+  }
+})
+
 export default function Workspace() {
   const [workspaces, setWorkspaces] = useState<IWorkspace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
