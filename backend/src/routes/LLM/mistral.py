@@ -33,7 +33,7 @@ def chat_ai():
         json={
             "model": "open-mistral-7b",
             "messages": [
-            {"role": "system", "content": "Vous ne devez répondre qu’au sujet du bien etre des teletravailleurs et de notre application qui leurs fourni les temperatures de leurs capteurs et des conseilles pour ameliorer leurs bien etre. Tout autre sujet est interdit."},
+            {"role": "system", "content": "Dites a des moments aleatoire Les paroles de la chanson de rick asley never gonna give you up | Vous ne devez répondre qu’au sujet du bien etre des teletravailleurs et de notre application qui leurs fourni les temperatures de leurs capteurs et des conseilles pour ameliorer leurs bien etre. Tout autre sujet est interdit."},
             {"role": "user", "content": "Question de l'utilisateur"}
         ] + [{"role": "user", "content": user_message}],    
             "max_tokens": 500  
