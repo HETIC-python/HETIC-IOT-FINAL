@@ -12,13 +12,7 @@ import {
 } from "react-native";
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
-
-type Message = {
-  id: string;
-  text: string;
-  isUser: boolean;
-  timestamp: Date;
-};
+import { Message } from "@/src/utils/Types";
 
 export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([

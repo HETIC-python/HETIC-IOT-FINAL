@@ -12,13 +12,7 @@ import {
 import { SERVER_API_URL } from "../../config/api";
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
-
-type UserProfile = {
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone?: string;
-};
+import { UserProfile } from "@/src/utils/Types";
 
 export default function Settings() {
   const { token, signOut } = useAuth();

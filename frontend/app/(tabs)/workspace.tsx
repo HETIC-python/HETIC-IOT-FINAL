@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { IWorkspace } from "@/src/utils/Types";
 import { CreateWorkspaceModalProps } from "@/src/utils/Interfaces";
 
@@ -119,16 +118,6 @@ function ListWorkspace() {
   );
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      staleTime: 15_000,
-      refetchOnWindowFocus: false
-    }
-  }
-})
-
 export default function Workspace() {
   const [workspaces, setWorkspaces] = useState<IWorkspace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -225,14 +214,10 @@ export default function Workspace() {
         //     <Text className="text-white font-semibold">Create Workspace</Text>
         //   </TouchableOpacity>
         // </View>
-        <QueryClientProvider client={queryClient}>
           <Dashboard />
-        </QueryClientProvider>
       ) : (
         <View>
-          <QueryClientProvider client={queryClient}>
-            <Dashboard />
-          </QueryClientProvider>
+          <Dashboard />
 
           {/* <FlatList
             data={workspaces}
