@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
+from functools import wraps
 
 import jwt
-from flask import current_app
+from flask import current_app, jsonify, request
 from src.models import User
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -55,3 +56,23 @@ class AuthService:
         if decoded:
             return User.query.get(decoded["user_id"])
         return None
+
+    @staticmethod
+    def require_authentication(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                token = request.headers.get("Authorization")
+                if not token:
+                    return jsonify({"error": "Authentication required"}), 401
+                if token.startswith("Bearer "):
+                    token = token.split(" ", 1)[1]
+                user = AuthService.get_user_from_token(token)
+                if not user:
+                    return jsonify({"error": "Invalid or expired token"}), 401
+                return func(user, *args, **kwargs)
+            except Exception as e:
+                current_app.logger.error(f"Auth error: {str(e)}")
+                return jsonify({"error": "Authentication error"}), 401
+
+        return wrapper
