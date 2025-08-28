@@ -1,5 +1,6 @@
 import Dashboard from "@/components/Dashboard";
 import { SERVER_API_URL } from "@/config/api";
+import { useWorkspace } from "@/src/context/WorkspaceContext";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -7,13 +8,23 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
-import { Workspace } from "@/src/utils/Types";
-import { CreateWorkspaceModalProps } from "@/src/utils/Interfaces";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+type IWorkspace = {
+  id: string;
+  name: string;
+  description: string;
+  is_active: boolean;
+};
+
+interface CreateWorkspaceModalProps {
+  isVisible: boolean;
+  onClose: () => void;
+  onSubmit: (data: { name: string; description: string }) => Promise<void>;
+}
 
 function CreateWorkspaceModal({
   isVisible,
@@ -100,18 +111,25 @@ function CreateWorkspaceModal({
   );
 }
 
-const queryClient = new QueryClient({
-  defaultOptions:{
-    queries:{
-      retry: 1,
-      staleTime: 15_000,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
-
+function ListWorkspace() {
+  const { workspaces, setCurrentWorkspace } = useWorkspace();
+  return (
+    <View className="flex-row flex-wrap gap-2 p-2">
+      {workspaces.map((workspace) => (
+      <TouchableOpacity
+        key={workspace.id}
+        onPress={() => setCurrentWorkspace(workspace)}
+        className="bg-white rounded-lg p-2 flex-row items-center"
+      >
+        <Text className="text-sm font-medium mr-2">{workspace.name}</Text>
+        <Text className="text-xs text-gray-500">→</Text>
+      </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
 export default function Workspace() {
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [workspaces, setWorkspaces] = useState<IWorkspace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
@@ -179,6 +197,7 @@ export default function Workspace() {
   return (
     <View className="flex-1 bg-gray-50">
       <Header title="My Workspaces" />
+      <ListWorkspace />
 
       {/* <View className="p-4 flex-row justify-end">
         <TouchableOpacity

@@ -21,10 +21,12 @@ class AuthService:
     @staticmethod
     def verify_token(token):
         try:
-            return jwt.decode(
+            decoded = jwt.decode(
                 token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
             )
-        except jwt.ExpiredSignatureError:
+            return decoded
+        except Exception as e:
+            current_app.logger.error(f"Token verification error: {str(e)}")
             return None
 
     @staticmethod

@@ -1,4 +1,6 @@
 import { SERVER_API_URL } from "@/config/api";
+import { useWorkspace } from "@/src/context/WorkspaceContext";
+import { SensorData } from "@/src/utils/Interfaces";
 import React, { useEffect, useState } from "react";
 import {
     ScrollView,
@@ -8,10 +10,14 @@ import {
     useWindowDimensions,
 } from "react-native";
 import TemperatureSensor from "./sensors/TemperatureSensor";
-import { SensorData } from "@/src/utils/Interfaces";
-
+type Sensor = {
+  id: number;
+  name: string;
+  source_id: string;
+};
 export default function Dashboard() {
   const { width } = useWindowDimensions();
+  const { currentWorkspace } = useWorkspace();
   const padding = 16;
   const gap = 16;
   const numColumns = width > 768 ? 2 : 1;
@@ -36,19 +42,24 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    if(!currentWorkspace) return;
+    console.log("workspace changed", currentWorkspace)
     const fetchSensorData = async () => {
       try {
         const sensorIds = [1042691358, 1042691359, 1042691360];
-        const workspace = await getWorkspaceData("1");
+        const workspace = await getWorkspaceData(
+          currentWorkspace?.id?.toString() || ""
+        );
         if (!workspace) {
           console.error("Failed to fetch workspace data");
           return;
         }
         const data = await Promise.all(
-          workspace?.sensors.map(async (id: string) => {
+          workspace?.sensors.map(async (id: Sensor) => {
             try {
+              console.log(id);
               const response = await fetch(
-                `${SERVER_API_URL}/api/analytics/sensor/${id}`
+                `${SERVER_API_URL}/api/analytics/sensor/${id.source_id}`
               );
               if (!response.ok) {
                 console.error(
@@ -84,7 +95,7 @@ export default function Dashboard() {
     const interval = setInterval(fetchSensorData, 30000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [currentWorkspace]);
 
   return (
     <View style={[styles.container]}>
@@ -95,12 +106,11 @@ export default function Dashboard() {
           <Text style={[styles.boxText]}>Raspberry Pi Gateway</Text>
           <Text style={[styles.statusText]}>● Online</Text>
         </View>
-
         <View style={[styles.grid]}>
-          {sensorData.map((data) => (
+          {sensorData.map((data, id) => (
             <TemperatureSensor
-              key={data.sensor_id}
-              sensorId={data.sensor_id}
+              key={`${data.source_address}_${id}`}
+              sensorId={data.source_address}
               temperature={data.temperature}
               humidity={data.humidity}
               time={data.time}

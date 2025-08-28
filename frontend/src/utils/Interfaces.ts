@@ -12,10 +12,5 @@ export interface SensorData {
     battery?: number;
     time: string;
     sensor_id: string;
-}
-
-export interface CreateWorkspaceModalProps {
-    isVisible: boolean;
-    onClose: () => void;
-    onSubmit: (data: { name: string; description: string }) => Promise<void>;
+    source_address: string;
 }

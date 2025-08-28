@@ -8,6 +8,7 @@ class Sensor(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    source_id = db.Column(db.String(100), unique=True, nullable=True)
     status = db.Column(db.String(20), default="inactive")
     workspace_id = db.Column(db.Integer, db.ForeignKey("workspaces.id"), nullable=False)
 

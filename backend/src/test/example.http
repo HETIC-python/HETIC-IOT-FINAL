@@ -8,8 +8,10 @@ POST {{baseUrl}}/auth/signup
 Content-Type: application/json
 
 {
-    "username": "testuser6",
-    "email": "test6@example.com",
+    "firstName": "User",
+    "lastName": "Test",
+    "username": "testuser10",
+    "email": "test10@example.com",
     "password": "password123"
 }
 
@@ -19,7 +21,7 @@ POST {{baseUrl}}/auth/signin
 Content-Type: application/json
 
 {
-    "email": "test@example.com",
+    "email": "test10@example.com",
     "password": "password123"
 }
 
@@ -91,6 +93,14 @@ Content-Type: application/json
 
 ### Reset Password with Token
 POST {{baseUrl}}/auth/reset-password/your_reset_token_here
+Content-Type: application/json
+
+{
+    "password": "newpassword123"
+}
+
+### Test Reset Password with Invalid Token
+POST {{baseUrl}}/auth/reset-password/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
 Content-Type: application/json
 
 {
