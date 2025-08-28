@@ -1,6 +1,7 @@
 import { SERVER_API_URL } from "@/config/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "./AuthContext";
 
 interface Sensor {
   id: number;
@@ -101,9 +102,10 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const { user } = useAuth();
   useEffect(() => {
     fetchWorkspaces();
-  }, []);
+  }, [user]);
 
   return (
     <WorkspaceContext.Provider

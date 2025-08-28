@@ -1,3 +1,5 @@
+import { Sensor } from "@/components/tasks/Sensor";
+import Tasks from "@/components/tasks/Tasks";
 import { SERVER_API_URL } from "@/config/api";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -90,6 +92,7 @@ export default function AddTaskPage() {
   };
 
   const fetchAvailableTasks = async () => {
+    console.log("Fetching available tasks...");
     try {
       const response = await fetch(`${SERVER_API_URL}/api/tasks`, {
         headers: {
@@ -162,6 +165,7 @@ export default function AddTaskPage() {
   };
 
   const associateTasksToSensor = async () => {
+    if (submitting === true) return;
     if (!selectedSensor || selectedTasks.length === 0) {
       Alert.alert("Erreur", "Veuillez sélectionner au moins une tâche");
       return;
@@ -305,73 +309,11 @@ export default function AddTaskPage() {
         <Text style={styles.sectionTitle}>Vos capteurs</Text>
 
         {userSensors.sensors.map((sensor) => (
-          <View key={sensor.id} style={styles.sensorItem}>
-            <View style={styles.sensorInfo}>
-              <Ionicons
-                name="hardware-chip"
-                size={24}
-                color={Colors.light.text}
-              />
-              <View style={styles.sensorDetails}>
-                <Text style={styles.sensorName}>{sensor.name}</Text>
-                <Text style={styles.sensorWorkspace}>
-                  {sensor.workspace_name}
-                </Text>
-
-                {/* Affichage des tâches associées */}
-                {sensor.tasks && sensor.tasks.length > 0 && (
-                  <View style={styles.associatedTasks}>
-                    <Text style={styles.associatedTasksTitle}>
-                      Tâches associées ({sensor.tasks.length}):
-                    </Text>
-                    {sensor.tasks.map((task) => (
-                      <Text key={task.id} style={styles.associatedTask}>
-                        • {task.name} (
-                        {task.status === "pending"
-                          ? "En attente"
-                          : task.status === "in_progress"
-                            ? "En cours"
-                            : "Terminée"}
-                        )
-                      </Text>
-                    ))}
-                  </View>
-                )}
-              </View>
-            </View>
-
-            <View style={styles.sensorActions}>
-              <View
-                style={[
-                  styles.sensorStatus,
-                  {
-                    backgroundColor:
-                      sensor.status === "active" ? "#4CAF50" : "#F44336",
-                  },
-                ]}
-              >
-                <Text style={styles.sensorStatusText}>
-                  {sensor.status === "active" ? "Actif" : "Inactif"}
-                </Text>
-              </View>
-
-              <TouchableOpacity
-                style={styles.addTaskButton}
-                onPress={() => openTaskModal(sensor)}
-              >
-                <Ionicons
-                  name="add-circle"
-                  size={20}
-                  color={Colors.light.tint}
-                />
-                <Text style={styles.addTaskButtonText}>
-                  {sensor.tasks && sensor.tasks.length > 0
-                    ? "Ajouter"
-                    : "Associer"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          <Sensor
+            key={sensor.id}
+            sensor={sensor}
+            openTaskModal={openTaskModal}
+          />
         ))}
       </ScrollView>
 
@@ -414,64 +356,14 @@ export default function AddTaskPage() {
             />
           </View>
 
-          {/* Available Tasks */}
-          <ScrollView style={styles.tasksContainer}>
-            <Text style={styles.sectionTitle}>
-              Tâches disponibles ({selectedTasks.length} sélectionnée(s))
-            </Text>
-
-            {filteredTasks.length > 0 ? (
-              filteredTasks.map((task) => (
-                <TouchableOpacity
-                  key={task.id}
-                  style={[
-                    styles.taskItem,
-                    selectedTasks.includes(task.id) && styles.taskItemSelected,
-                  ]}
-                  onPress={() => toggleTaskSelection(task.id)}
-                >
-                  <View style={styles.taskInfo}>
-                    <Ionicons
-                      name="list"
-                      size={24}
-                      color={
-                        selectedTasks.includes(task.id)
-                          ? Colors.light.tint
-                          : Colors.light.text
-                      }
-                    />
-                    <View style={styles.taskDetails}>
-                      <Text style={styles.taskName}>{task.name}</Text>
-                      <Text style={styles.taskDescription}>
-                        {task.description}
-                      </Text>
-                      <Text style={styles.taskStatus}>
-                        Statut:{" "}
-                        {task.status === "pending"
-                          ? "En attente"
-                          : task.status === "in_progress"
-                            ? "En cours"
-                            : "Terminée"}
-                      </Text>
-                    </View>
-                  </View>
-                  {selectedTasks.includes(task.id) && (
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={24}
-                      color={Colors.light.tint}
-                    />
-                  )}
-                </TouchableOpacity>
-              ))
-            ) : (
-              <Text style={styles.noTasksText}>
-                {searchTerm
-                  ? "Aucune tâche disponible trouvée pour cette recherche"
-                  : "Aucune tâche disponible pour ce capteur"}
-              </Text>
-            )}
-          </ScrollView>
+          <Tasks
+              selectedTasks={selectedTasks}
+            setSelectedTasks={setSelectedTasks}
+            allTasks={availableTasks}
+            sensor={selectedSensor as Sensor}
+            toggleTaskSelection={toggleTaskSelection}
+            closeTaskModel={closeTaskModal}
+          />
 
           {/* Modal Footer */}
           <View style={styles.modalFooter}>

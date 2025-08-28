@@ -113,17 +113,19 @@ function CreateWorkspaceModal({
 
 function ListWorkspace() {
   const { workspaces, setCurrentWorkspace } = useWorkspace();
+  const router = useRouter();
   return (
     <View className="flex-row flex-wrap gap-2 p-2">
       {workspaces.map((workspace) => (
-      <TouchableOpacity
-        key={workspace.id}
-        onPress={() => setCurrentWorkspace(workspace)}
-        className="bg-white rounded-lg p-2 flex-row items-center"
-      >
-        <Text className="text-sm font-medium mr-2">{workspace.name}</Text>
-        <Text className="text-xs text-gray-500">→</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          key={workspace.id}
+          onPress={() => setCurrentWorkspace(workspace)}
+          onLongPress={() => router.push(`/workspace/${workspace.id}`)}
+          className="bg-white rounded-lg p-2 flex-row items-center"
+        >
+          <Text className="text-sm font-medium mr-2">{workspace.name}</Text>
+          <Text className="text-xs text-gray-500 last:invisible">→</Text>
+        </TouchableOpacity>
       ))}
     </View>
   );

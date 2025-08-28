@@ -1,8 +1,8 @@
 import { SERVER_API_URL } from "@/config/api";
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, RefreshControl } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Alert, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../../constants/Colors';
 
 interface Sensor {
@@ -226,7 +226,7 @@ export default function WorkspacePage() {
         
         <TouchableOpacity 
           style={styles.actionButton}
-          onPress={() => router.push(`/workspace/${id}/analytics`)}
+          onPress={() => router.push(`/workspace`)}
         >
           <Ionicons name="analytics-outline" size={24} color={Colors.light.tint} />
           <Text style={styles.actionButtonText}>Voir les analyses</Text>
