@@ -1,7 +1,10 @@
+import json
 import os
 
 import pandas as pd
 from influxdb_client_3 import InfluxDBClient3
+from src.extensions import db
+from src.service.redis_client import redis_client
 
 
 class AnalyticsService:
@@ -13,13 +16,19 @@ class AnalyticsService:
 
     def _get_client(self):
         return InfluxDBClient3(
-            host=self.url.replace('https://', '').replace('http://', ''),
+            host=self.url.replace("https://", "").replace("http://", ""),
             token=self.token,
             org=self.org,
-            database=self.database
+            database=self.database,
         )
 
     def get_sensor_data(self, sensor_id: int, hours: int = 1, limit: int = 1):
+        cache_key = f"sensor_data:{sensor_id}:{hours}:{limit}"
+        cached = redis_client.get(cache_key)
+        if cached:
+            print("Returning cached data for sensor", sensor_id)
+            return json.loads(cached), None
+
         client = self._get_client()
         try:
             query = f"""
@@ -35,20 +44,49 @@ class AnalyticsService:
 
             table = client.query(query=query, language="sql")
             df = table.to_pandas()
-            records = df.to_dict('records')
+            records = df.to_dict("records")
 
             formatted_records = []
             for record in records:
                 formatted_record = {
-                    'time': record['time'].isoformat() if pd.notnull(record.get('time')) else None,
-                    'temperature': float(record['data_temperature']) if pd.notnull(record.get('data_temperature')) else None,
-                    'humidity': float(record['data_humidity']) if pd.notnull(record.get('data_humidity')) else None,
-                    'source_address': str(record['source_address']) if pd.notnull(record.get('source_address')) else None,
-                    'sensor_id': int(record['sensor_id']) if pd.notnull(record.get('sensor_id')) else None,
-                    'topic': str(record['topic']) if pd.notnull(record.get('topic')) else None
+                    "time": (
+                        record["time"].isoformat()
+                        if pd.notnull(record.get("time"))
+                        else None
+                    ),
+                    "temperature": (
+                        float(record["data_temperature"])
+                        if pd.notnull(record.get("data_temperature"))
+                        else None
+                    ),
+                    "humidity": (
+                        float(record["data_humidity"])
+                        if pd.notnull(record.get("data_humidity"))
+                        else None
+                    ),
+                    "source_address": (
+                        str(record["source_address"])
+                        if pd.notnull(record.get("source_address"))
+                        else None
+                    ),
+                    "sensor_id": (
+                        int(record["sensor_id"])
+                        if pd.notnull(record.get("sensor_id"))
+                        else None
+                    ),
+                    "topic": (
+                        str(record["topic"])
+                        if pd.notnull(record.get("topic"))
+                        else None
+                    ),
                 }
-                formatted_record = {k: v for k, v in formatted_record.items() if v is not None}
+                formatted_record = {
+                    k: v for k, v in formatted_record.items() if v is not None
+                }
                 formatted_records.append(formatted_record)
+
+            # Cache the result for 60 seconds
+            redis_client.setex(cache_key, 60, json.dumps(formatted_record))
 
             return formatted_record, None
 
