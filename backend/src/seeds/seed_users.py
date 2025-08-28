@@ -2,39 +2,45 @@ from datetime import datetime
 
 from flask import current_app
 from src.extensions import db
-from src.models import User
-from werkzeug.security import generate_password_hash
+from src.models import Sensor, Task, User, Workspace
+from src.service.auth_service import AuthService
 
 
 def seed_users():
     try:
-        # Delete existing users
         User.query.delete()
-        
-        # Create test users
         users = [
             User(
+                username='admin',
                 email='admin@iot.com',
-                password="test1234",
-                created_at=datetime.utcnow()
+                password=AuthService.hash_password('test1234'),
+                created_at=datetime.utcnow(),
+                role='admin',
+                is_validated=True
             ),
             User(
+                username='test',
                 email='test@iot.com',
-                password="test1234",
-                created_at=datetime.utcnow()
+                password=AuthService.hash_password('test1234'),
+                created_at=datetime.utcnow(),
+                role='user',
+                is_validated=True
             ),
             User(
+                username='demo',
                 email='demo@iot.com',
-                password="test1234",
-                created_at=datetime.utcnow()
+                password=AuthService.hash_password('test1234'),
+                created_at=datetime.utcnow(),
+                role='user',
+                is_validated=True
             )
         ]
         
-        # Add users to database
         db.session.bulk_save_objects(users)
         db.session.commit()
         
         current_app.logger.info(f'Successfully seeded {len(users)} users')
+        return users[0]  # NOTE: Return admin user for other seeders
         
     except Exception as e:
         current_app.logger.error(f'Error seeding users: {str(e)}')
