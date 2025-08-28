@@ -27,9 +27,14 @@ export const authService = {
         },
         body: JSON.stringify(credentials),
       });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Unknown error");
+      }
       const data = await response.json();
       return { ...data };
     } catch (error: any) {
+      console.error("Error during sign-in:", error);
       if (error.response?.data?.message) {
         throw new Error(error.response.data.message);
       }

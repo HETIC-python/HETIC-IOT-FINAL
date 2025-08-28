@@ -3,8 +3,8 @@ from datetime import datetime
 from src.extensions import db
 
 sensor_task = db.Table('sensor_task',
-    db.Column('sensor_id', db.Integer, db.ForeignKey('sensors.id'), primary_key=True),
-    db.Column('task_id', db.Integer, db.ForeignKey('tasks.id'), primary_key=True),
+    db.Column('sensor_id', db.Integer, db.ForeignKey('sensors.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('task_id', db.Integer, db.ForeignKey('tasks.id', ondelete='CASCADE'), primary_key=True),
     db.Column('created_at', db.DateTime, nullable=False, default=datetime.utcnow)
 )
 
