@@ -24,7 +24,7 @@ services:
       - INFLUXDB_MEASUREMENT=${INFLUXDB_MEASUREMENT}
       - SEND_EMAIL_USERNAME=${SEND_EMAIL_USERNAME}
       - SEND_EMAIL_PASSWORD=${SEND_EMAIL_PASSWORD}
-
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY}
     depends_on:
       - db
       - redis
