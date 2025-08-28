@@ -1,31 +1,34 @@
-import { SERVER_API_URL } from "@/config/api";
 import { useRef, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    KeyboardAvoidingView,
-    Platform,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { Header } from "../../src/components/Header";
-import { useAuth } from "../../src/context/AuthContext";
-import { Message } from "@/src/utils/Types";
+
+type Message = {
+  id: string;
+  text: string;
+  isUser: boolean;
+  timestamp: Date;
+};
 
 export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "initial",
-      text: "Hello! How can I help you with your IoT environment monitoring today?",
+      text: "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
       isUser: false,
       timestamp: new Date(),
     },
   ]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { token } = useAuth();
   const flatListRef = useRef<FlatList>(null);
 
   const sendMessage = async () => {
@@ -43,37 +46,30 @@ export default function Chat() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${SERVER_API_URL}/api/chat-ai`, {
+      const response = await fetch("http://localhost:5000/api/chat-ai", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          message: userMessage.text,
-        }),
+        body: JSON.stringify({ message: userMessage.text }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to get AI response");
-      }
-
       const data = await response.json();
-      
+
       const aiMessage: Message = {
         id: `ai-${Date.now()}`,
-        text: data.response || "Sorry, I couldn't process your request.",
+        text: data.response || "Pas de réponse du modèle.",
         isUser: false,
         timestamp: new Date(),
       };
 
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      console.error("Error sending message:", error);
-      
+      console.error("Erreur:", error);
+
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
-        text: "Sorry, there was an error processing your request. Please try again.",
+        text: "Erreur lors de la communication avec le serveur.",
         isUser: false,
         timestamp: new Date(),
       };
@@ -89,22 +85,17 @@ export default function Chat() {
 
   const renderMessage = ({ item }: { item: Message }) => (
     <View
-      className={`p-3 rounded-lg mb-2 max-w-[80%] ${
-        item.isUser
-          ? "bg-primary-500 self-end rounded-tr-none"
-          : "bg-gray-200 self-start rounded-tl-none"
-      }`}
+      style={{
+        padding: 10,
+        borderRadius: 10,
+        marginBottom: 8,
+        maxWidth: "80%",
+        alignSelf: item.isUser ? "flex-end" : "flex-start",
+        backgroundColor: item.isUser ? "#4f46e5" : "#e5e7eb",
+      }}
     >
-      <Text
-        className={`${item.isUser ? "text-white" : "text-gray-800"}`}
-      >
-        {item.text}
-      </Text>
-      <Text
-        className={`text-xs mt-1 ${
-          item.isUser ? "text-white/70" : "text-gray-500"
-        }`}
-      >
+      <Text style={{ color: item.isUser ? "white" : "black" }}>{item.text}</Text>
+      <Text style={{ fontSize: 10, marginTop: 4, color: item.isUser ? "rgba(255,255,255,0.7)" : "#6b7280" }}>
         {item.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </Text>
     </View>
@@ -113,26 +104,26 @@ export default function Chat() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1"
+      style={{ flex: 1 }}
     >
-      <View className="flex-1 bg-white">
+      <View style={{ flex: 1, backgroundColor: "white" }}>
         <Header title="AI Assistant" />
-        
+
         <FlatList
           ref={flatListRef}
           data={messages}
           renderItem={renderMessage}
           keyExtractor={(item) => item.id}
-          contentContainerClassName="p-4"
+          contentContainerStyle={{ padding: 16 }}
           onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
         />
 
-        <View className="p-2 border-t border-gray-200 bg-gray-50 flex-row items-center">
+        <View style={{ flexDirection: "row", padding: 8, borderTopWidth: 1, borderColor: "#e5e7eb", backgroundColor: "#f9fafb" }}>
           <TextInput
-            className="flex-1 p-2 bg-white border border-gray-300 rounded-full mr-2"
+            style={{ flex: 1, padding: 10, borderWidth: 1, borderColor: "#d1d5db", borderRadius: 50, marginRight: 8, backgroundColor: "white" }}
             value={inputText}
             onChangeText={setInputText}
-            placeholder="Type your message..."
+            placeholder="Tapez votre message..."
             multiline
             returnKeyType="send"
             onSubmitEditing={sendMessage}
@@ -140,14 +131,16 @@ export default function Chat() {
           <TouchableOpacity
             onPress={sendMessage}
             disabled={isLoading || !inputText.trim()}
-            className={`p-2 rounded-full ${
-              isLoading || !inputText.trim() ? "bg-gray-300" : "bg-primary-500"
-            }`}
+            style={{
+              padding: 12,
+              borderRadius: 50,
+              backgroundColor: isLoading || !inputText.trim() ? "#d1d5db" : "#4f46e5",
+            }}
           >
             {isLoading ? (
               <ActivityIndicator size="small" color="#ffffff" />
             ) : (
-              <Text className="text-white px-3 py-1 font-medium">Send</Text>
+              <Text style={{ color: "white", fontWeight: "500" }}>Envoyer</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -155,5 +148,3 @@ export default function Chat() {
     </KeyboardAvoidingView>
   );
 }
-//   );
-// }
