@@ -1,10 +1,10 @@
 import Dashboard from "@/components/Dashboard";
 import { SERVER_API_URL } from "@/config/api";
+import { useWorkspace } from "@/src/context/WorkspaceContext";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  FlatList,
   Text,
   TextInput,
   TouchableOpacity,
@@ -13,7 +13,7 @@ import {
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
 
-type Workspace = {
+type IWorkspace = {
   id: string;
   name: string;
   description: string;
@@ -111,8 +111,25 @@ function CreateWorkspaceModal({
   );
 }
 
+function ListWorkspace() {
+  const { workspaces, setCurrentWorkspace } = useWorkspace();
+  return (
+    <View className="flex-row flex-wrap gap-2 p-2">
+      {workspaces.map((workspace) => (
+      <TouchableOpacity
+        key={workspace.id}
+        onPress={() => setCurrentWorkspace(workspace)}
+        className="bg-white rounded-lg p-2 flex-row items-center"
+      >
+        <Text className="text-sm font-medium mr-2">{workspace.name}</Text>
+        <Text className="text-xs text-gray-500">→</Text>
+      </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
 export default function Workspace() {
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [workspaces, setWorkspaces] = useState<IWorkspace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
@@ -180,6 +197,7 @@ export default function Workspace() {
   return (
     <View className="flex-1 bg-gray-50">
       <Header title="My Workspaces" />
+      <ListWorkspace />
 
       {/* <View className="p-4 flex-row justify-end">
         <TouchableOpacity
@@ -208,34 +226,38 @@ export default function Workspace() {
         // </View>
         <Dashboard />
       ) : (
-        <FlatList
-          data={workspaces}
-          keyExtractor={(item) => item.id}
-          contentContainerClassName="p-4"
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              className="bg-white rounded-xl mb-3 p-4 shadow-sm border border-gray-100 active:opacity-70"
-              onPress={() => handleWorkspacePress(item.id)}
-            >
-              <Text className="text-lg font-semibold text-gray-800 mb-1">
-                {item.name}
-              </Text>
-              {item.description && (
-                <Text className="text-gray-600 text-sm">
-                  {item.description}
+        <View>
+          <Dashboard />
+
+          {/* <FlatList
+            data={workspaces}
+            keyExtractor={(item) => item.id}
+            contentContainerClassName="p-4"
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                className="bg-white rounded-xl mb-3 p-4 shadow-sm border border-gray-100 active:opacity-70"
+                onPress={() => handleWorkspacePress(item.id)}
+              >
+                <Text className="text-lg font-semibold text-gray-800 mb-1">
+                  {item.name}
                 </Text>
-              )}
-              <View className="flex-row items-center mt-2">
-                <Text className="text-sm text-gray-500">
-                  {(item as any)?.sensors?.length || 0} sensors
-                </Text>
-                <Text className="text-primary-500 ml-auto">
-                  View Dashboard →
-                </Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
+                {item.description && (
+                  <Text className="text-gray-600 text-sm">
+                    {item.description}
+                  </Text>
+                )}
+                <View className="flex-row items-center mt-2">
+                  <Text className="text-sm text-gray-500">
+                    {(item as any)?.sensors?.length || 0} sensors
+                  </Text>
+                  <Text className="text-primary-500 ml-auto">
+                    View Dashboard →
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          /> */}
+        </View>
       )}
 
       <CreateWorkspaceModal

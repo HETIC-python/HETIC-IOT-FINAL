@@ -1,8 +1,9 @@
-from flask import Blueprint, jsonify, request
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from src.extensions import db
-from src.models import Sensor, Workspace, Task
 import logging
+
+from flask import Blueprint, jsonify, request
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from src.extensions import db
+from src.models import Sensor, Task, Workspace
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)
@@ -29,7 +30,7 @@ def create_sensor():
 
         sensor = Sensor(
             name=data.get("name"),
-            # type=data.get("type"),
+            source_id=data.get("source_id"),
             status=data.get("status", "inactive"),
             workspace_id=workspace_id
         )

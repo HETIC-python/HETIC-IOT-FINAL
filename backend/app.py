@@ -1,8 +1,10 @@
 from flask import jsonify
 from flask_cors import CORS
 from src import create_app
+from src.service.redis_client import redis_client
 
 app = create_app()
+
 CORS(
     app,
     resources={
