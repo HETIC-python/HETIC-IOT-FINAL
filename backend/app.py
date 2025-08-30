@@ -2,6 +2,7 @@ from flask import jsonify
 from flask_cors import CORS
 from src import create_app
 from src.service.redis_client import redis_client
+from tasks import treat_sleep_analysis, treat_work_analysis
 
 app = create_app()
 
@@ -21,7 +22,11 @@ CORS(
 @app.route("/")
 def home():
     print("Home route accessed")
+    treat_sleep_analysis.delay()
+    treat_work_analysis.delay()
     return jsonify({"message": "Welcome to the Flask app! uwu"}), 200
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
