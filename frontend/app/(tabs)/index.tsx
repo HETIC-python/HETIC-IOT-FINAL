@@ -3,13 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
 
-type UserProfile = {
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone?: string;
-};
-
 export default function Index() {
   const { data, isError, isLoading } = useQuery({
     queryKey: ["users"],
