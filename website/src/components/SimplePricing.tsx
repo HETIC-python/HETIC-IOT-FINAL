@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "./../components/Button";
 import { Card } from "./../components/Card";
 import { Check } from "lucide-react";
@@ -5,9 +6,9 @@ import { Check } from "lucide-react";
 const features = [
   "Raspberry Pi + 3 sensors",
   "Mobile app included",
-  "Real-time monitoring", 
+  "Real-time monitoring",
   "AI insights",
-  "No monthly fees"
+  "No monthly fees",
 ];
 
 export function SimplePricing() {
@@ -22,15 +23,11 @@ export function SimplePricing() {
             Complete IoT monitoring solution, ready to use out of the box.
           </p>
         </div>
-        
+
         <Card className="max-w-md mx-auto p-8 text-center">
-          <div className="text-4xl font-bold text-foreground mb-2">
-            $199
-          </div>
-          <p className="text-muted-foreground mb-6">
-            Complete monitoring kit
-          </p>
-          
+          <div className="text-4xl font-bold text-foreground mb-2">$199</div>
+          <p className="text-muted-foreground mb-6">Complete monitoring kit</p>
+
           <div className="space-y-3 mb-8">
             {features.map((feature) => (
               <div key={feature} className="flex items-center gap-3">
@@ -41,11 +38,13 @@ export function SimplePricing() {
               </div>
             ))}
           </div>
-          
-          <Button size="lg" variant="default" className="w-full">
-            Order Now
-          </Button>
-          
+
+          <Link to={"/kit"}>
+            <Button size="lg" variant="default" className="w-full">
+              Order Now
+            </Button>
+          </Link>
+
           <p className="text-sm text-muted-foreground mt-4">
             Free shipping • 30-day guarantee
           </p>
