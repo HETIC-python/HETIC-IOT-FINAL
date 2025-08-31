@@ -1,3 +1,26 @@
+#Learned new technique from here
+# NOTE: for the future -> x is important : to tell docker this is not a service
+# https://stackoverflow.com/a/48651071
+x-common-env: &common-env
+  FLASK_APP: app.py
+  FLASK_ENV: development
+  POSTGRES_URI: postgresql://postgres:postgres@db:5432/iot_db
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_DB: iot_db
+  STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+  STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+  OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
+  INFLUXDB_URL: ${INFLUXDB_URL}
+  INFLUXDB_TOKEN: ${INFLUXDB_TOKEN}
+  INFLUXDB_ORG: ${INFLUXDB_ORG}
+  INFLUXDB_BUCKET: ${INFLUXDB_BUCKET}
+  INFLUXDB_MEASUREMENT: ${INFLUXDB_MEASUREMENT}
+  SEND_EMAIL_USERNAME: ${SEND_EMAIL_USERNAME}
+  SEND_EMAIL_PASSWORD: ${SEND_EMAIL_PASSWORD}
+  MISTRAL_API_KEY: ${MISTRAL_API_KEY}
+  FLOWER_UNAUTHENTICATED_API: true
+
 services:
   web:
     build: ./backend
@@ -7,24 +30,24 @@ services:
       - "5001:5001"
       # - "5000:5000"
       - "5678:5678"
-    environment:
-      - FLASK_APP=app.py
-      - FLASK_ENV=development
-      - POSTGRES_URI=postgresql://postgres:postgres@db:5432/iot_db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=iot_db
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
-      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
-      - INFLUXDB_URL=${INFLUXDB_URL}
-      - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
-      - INFLUXDB_ORG=${INFLUXDB_ORG}
-      - INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
-      - INFLUXDB_MEASUREMENT=${INFLUXDB_MEASUREMENT}
-      - SEND_EMAIL_USERNAME=${SEND_EMAIL_USERNAME}
-      - SEND_EMAIL_PASSWORD=${SEND_EMAIL_PASSWORD}
-      - MISTRAL_API_KEY=${MISTRAL_API_KEY}
+    environment: *common-env
+      # - FLASK_APP=app.py
+      # - FLASK_ENV=development
+      # - POSTGRES_URI=postgresql://postgres:postgres@db:5432/iot_db
+      # - POSTGRES_USER=postgres
+      # - POSTGRES_PASSWORD=postgres
+      # - POSTGRES_DB=iot_db
+      # - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      # - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      # - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+      # - INFLUXDB_URL=${INFLUXDB_URL}
+      # - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
+      # - INFLUXDB_ORG=${INFLUXDB_ORG}
+      # - INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
+      # - INFLUXDB_MEASUREMENT=${INFLUXDB_MEASUREMENT}
+      # - SEND_EMAIL_USERNAME=${SEND_EMAIL_USERNAME}
+      # - SEND_EMAIL_PASSWORD=${SEND_EMAIL_PASSWORD}
+      # - MISTRAL_API_KEY=${MISTRAL_API_KEY}
     depends_on:
       - db
       - redis
@@ -72,6 +95,47 @@ services:
       - ADMINER_DESIGN_USER=postgres
       - ADMINER_DESIGN_PASSWORD=postgres
 
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.celery
+    command: celery -A make_celery worker -l info -E
+    depends_on:
+      - redis
+    volumes: ['./backend:/queue']
+    environment: *common-env
+      # - FLASK_APP=app.py
+      # - FLASK_ENV=development
+      # - POSTGRES_URI=postgresql://postgres:postgres@db:5432/iot_db
+      # - POSTGRES_USER=postgres
+      # - POSTGRES_PASSWORD=postgres
+      # - POSTGRES_DB=iot_db
+      # - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      # - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      # - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+      # - INFLUXDB_URL=${INFLUXDB_URL}
+      # - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
+      # - INFLUXDB_ORG=${INFLUXDB_ORG}
+      # - INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
+      # - INFLUXDB_MEASUREMENT=${INFLUXDB_MEASUREMENT}
+      # - SEND_EMAIL_USERNAME=${SEND_EMAIL_USERNAME}
+      # - SEND_EMAIL_PASSWORD=${SEND_EMAIL_PASSWORD}
+      # - MISTRAL_API_KEY=${MISTRAL_API_KEY}
+      #
+  flower:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.celery
+    command: celery -A make_celery flower --port=5555
+    depends_on:
+      - redis
+      - worker
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./backend:/queue
+    env_file:
+      - .env
 volumes:
   db_data:
   redis_data:
