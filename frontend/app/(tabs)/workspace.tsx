@@ -1,4 +1,5 @@
 import Dashboard from "@/components/Dashboard";
+import { NotSignedIn } from "@/components/NotSignedIn";
 import { SERVER_API_URL } from "@/config/api";
 import { useWorkspace } from "@/src/context/WorkspaceContext";
 import { useRouter } from "expo-router";
@@ -116,14 +117,14 @@ function ListWorkspace() {
   return (
     <View className="flex-row flex-wrap gap-2 p-2">
       {workspaces.map((workspace) => (
-      <TouchableOpacity
-        key={workspace.id}
-        onPress={() => setCurrentWorkspace(workspace)}
-        className="bg-white rounded-lg p-2 flex-row items-center"
-      >
-        <Text className="text-sm font-medium mr-2">{workspace.name}</Text>
-        <Text className="text-xs text-gray-500">→</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          key={workspace.id}
+          onPress={() => setCurrentWorkspace(workspace)}
+          className="bg-white rounded-lg p-2 flex-row items-center"
+        >
+          <Text className="text-sm font-medium mr-2">{workspace.name}</Text>
+          <Text className="text-xs text-gray-500">→</Text>
+        </TouchableOpacity>
       ))}
     </View>
   );
@@ -132,7 +133,7 @@ export default function Workspace() {
   const [workspaces, setWorkspaces] = useState<IWorkspace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
+  const { token, isSignedIn } = useAuth();
   const router = useRouter();
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -193,6 +194,10 @@ export default function Workspace() {
   const handleWorkspacePress = (workspaceId: string) => {
     router.push(`/workspace/${workspaceId}`);
   };
+
+  if (!isSignedIn) {
+    return <NotSignedIn />;
+  }
 
   return (
     <View className="flex-1 bg-gray-50">
