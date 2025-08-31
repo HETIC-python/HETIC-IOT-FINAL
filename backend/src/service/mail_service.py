@@ -39,7 +39,9 @@ class MailService:
             html=html,
             sender=("Sentio IoT", mail_config["MAIL_DEFAULT_SENDER"]),
         )
-        #mail.send(msg)
+        print("Prepared email:", msg)
+        if current_app.config.get("SEND_EMAILS"):
+            mail.send(msg)
 
     @staticmethod
     def send_validation_email(email, token):
@@ -61,4 +63,22 @@ class MailService:
             subject="Sentio - Password Reset Request",
             template_name="password_reset.html",
             reset_link=reset_link,
+        )
+
+    @staticmethod
+    def send_sleep_analysis_email(email, analysis_data):
+        MailService.send_email(
+            to=email,
+            subject="Sentio - Sleep Analysis Report",
+            template_name="sleep_analysis.html",
+            message=analysis_data,
+        )
+
+    @staticmethod
+    def send_work_analysis_email(email, analysis_data):
+        MailService.send_email(
+            to=email,
+            subject="Sentio - Work Analysis Report",
+            template_name="work_analysis.html",
+            message=analysis_data,
         )
