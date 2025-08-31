@@ -185,6 +185,23 @@ export default function Settings() {
     </View>
   );
 
+  const toggleEmail = async () => {
+    try {
+      const res = await fetch(`${SERVER_API_URL}/api/settings/email`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) throw new Error("Toggle failed");
+      const json = await res.json();
+      setEmailNotifications(json.email_notif);
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }
+
   const renderSettingItem = (
     label: string,
     value: boolean,
@@ -224,8 +241,7 @@ export default function Settings() {
           {renderSettingItem(
             "Email Notifications", 
             emailNotifications, 
-            setEmailNotifications,
-            "Receive weekly summary reports"
+            () => toggleEmail()
           )}
         </View>
 

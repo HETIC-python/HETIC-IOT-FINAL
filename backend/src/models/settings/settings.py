@@ -16,6 +16,6 @@ class Settings(db.Model):
         return {
             "userId": self.user_id,
             "emailNotif": self.email_notif,
-            "mobile": self.mobile_notif,
+            "mobileNotif": self.mobile_notif,
             "themeMod": self.theme_mode
         }

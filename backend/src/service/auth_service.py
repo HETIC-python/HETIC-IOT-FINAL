@@ -26,7 +26,7 @@ class AuthService:
             )
             return decoded
         except Exception as e:
-            current_app.logger.error(f"Token verification error: {str(e)}")
+            # current_app.logger.error(f"Token verification error: {str(e)}")
             return None
 
     @staticmethod
