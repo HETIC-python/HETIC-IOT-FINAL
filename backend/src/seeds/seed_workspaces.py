@@ -2,15 +2,17 @@ from datetime import datetime
 
 from flask import current_app
 from src.extensions import db
-from src.models import Sensor, User, Workspace
+from src.models import Sensor, Task, User, Workspace
 
 from .seed_users import seed_users
 
+sensor1, sensor2, sensor3 = 1961532156, 1042691358, 546745754
 
 def seed_workspaces():
     try:
         Sensor.query.delete()
         Workspace.query.delete()
+        Task.query.delete()
 
         admin_user = User.query.filter_by(email="admin@iot.com").first()
         if not admin_user:
@@ -19,6 +21,11 @@ def seed_workspaces():
         if not admin_user:
             current_app.logger.error("Admin user not found and could not be created")
             return
+        sleep_task = Task(name="sleep", description="Sleep analysis", status="active")
+        work_task = Task(name="work", description="Work analysis", status="active")
+        db.session.add(sleep_task)
+        db.session.add(work_task)
+        db.session.flush()
 
         workspace_data = [
             {
@@ -33,14 +40,19 @@ def seed_workspaces():
                 "sensors": [
                     {
                         "name": "Office Temperature",
-                        "source_id": "1961532156",
+                        "source_id": sensor1,
                         "status": "active",
                     },
                     {
                         "name": "Office Humidity",
-                        "source_id": "1042691358",
+                        "source_id": sensor2,
                         "status": "active",
                     },
+                    {
+                        "name": "Office CO2",
+                        "source_id": sensor3,
+                        "status": "active",
+                    }
                 ],
             },
             {
@@ -53,16 +65,16 @@ def seed_workspaces():
                     is_active=True,
                 ),
                 "sensors": [
-                    {
-                        "name": "Server Rack 1",
-                        "source_id": "1042691360",
-                        "status": "active",
-                    },
-                    {
-                        "name": "Server Rack 2",
-                        "source_id": "1042691361",
-                        "status": "active",
-                    },
+                    # {
+                    #     "name": "Server Rack 1",
+                    #     "source_id": "1042691360",
+                    #     "status": "active",
+                    # },
+                    # {
+                    #     "name": "Server Rack 2",
+                    #     "source_id": "1042691361",
+                    #     "status": "active",
+                    # },
                 ],
             },
             {
@@ -75,25 +87,24 @@ def seed_workspaces():
                     is_active=True,
                 ),
                 "sensors": [
-                    {
-                        "name": "Living Room Air Quality",
-                        "source_id": "1042691362",
-                        "status": "active",
-                    },
-                    {
-                        "name": "Living Room Temperature",
-                        "source_id": "1042691363",
-                        "status": "active",
-                    },
+                    # {
+                    #     "name": "Living Room Air Quality",
+                    #     "source_id": "1042691362",
+                    #     "status": "active",
+                    # },
+                    # {
+                    #     "name": "Living Room Temperature",
+                    #     "source_id": "1042691363",
+                    #     "status": "active",
+                    # },
                 ],
             },
         ]
 
-        # Add workspaces and their sensors
         for data in workspace_data:
             workspace = data["workspace"]
             db.session.add(workspace)
-            db.session.flush()  # Get workspace ID
+            db.session.flush()
 
             # Create and associate sensors
             for sensor_data in data["sensors"]:
@@ -103,12 +114,13 @@ def seed_workspaces():
                     source_id=sensor_data["source_id"],
                     status=sensor_data["status"],
                 )
+                sensor.tasks.append(sleep_task)
                 db.session.add(sensor)
 
         db.session.commit()
 
         current_app.logger.info(
-            f"Successfully seeded {len(workspace_data)} workspaces with sensors"
+            f"Successfully seeded {len(workspace_data)} workspaces with sensors + tasks"
         )
 
     except Exception as e:
