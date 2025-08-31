@@ -213,7 +213,24 @@ export default function Settings() {
       });
       if (!res.ok) throw new Error("Toggle failed");
       const json = await res.json();
-      setNotificationsEnabled(json.email_notif);
+      setNotificationsEnabled(json.mobile_notif);
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }
+  
+  const toggleTheme_mode = async () => {
+    try {
+      const res = await fetch(`${SERVER_API_URL}/api/settings/theme_mode`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) throw new Error("Toggle failed");
+      const json = await res.json();
+      setDarkMode(json.theme_mode);
     } catch (error) {
       console.log("Error", error);
     }
@@ -258,7 +275,8 @@ export default function Settings() {
           {renderSettingItem(
             "Email Notifications", 
             emailNotifications, 
-            () => toggleEmailNotif()
+            () => toggleEmailNotif(),
+            "Receive alerts for sensor data changes"
           )}
         </View>
 
@@ -267,7 +285,7 @@ export default function Settings() {
           {renderSettingItem(
             "Dark Mode", 
             darkMode, 
-            setDarkMode,
+            () => toggleTheme_mode(),
             "Enable dark theme for the app"
           )}
         </View>

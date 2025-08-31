@@ -17,5 +17,5 @@ class Settings(db.Model):
             "userId": self.user_id,
             "email_notif": self.email_notif,
             "mobile_notif": self.mobile_notif,
-            "theme_mod": self.theme_mode
+            "theme_mode": self.theme_mode
         }

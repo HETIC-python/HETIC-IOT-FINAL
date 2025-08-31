@@ -57,3 +57,33 @@ def update_mobile_notif(user, request):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Validation Error", "message": str(e)}), 400
+
+#UPDATE theme_mod
+@settings_bp.route('/settings/theme_mode', methods=["PUT"])
+@require_auth
+def update_theme_mod(user, request):
+    try:
+        settings = Settings.query.get(user.id)
+        if not settings:
+            return jsonify({
+                "error": "Not Found", "message": 
+                f"User_id with ID {user.id} not found"
+            }), 404
+        
+        else:
+            current = (settings.theme_mode or "light").lower()
+            if current == "light":
+                settings.theme_mode = "dark"
+            else:
+                settings.theme_mode = "light"
+
+            db.session.commit()
+            
+            return jsonify({
+                "message": "theme_mode toggled successfully", 
+                "user_id": user.id,"theme_mode": settings.theme_mode
+            }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Validation Error", "message": str(e)}), 400
