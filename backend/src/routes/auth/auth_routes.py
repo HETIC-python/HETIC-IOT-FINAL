@@ -33,6 +33,12 @@ def signup():
         )
         
         db.session.add(user)
+        db.session.flush() 
+
+        if not Settings.query.filter_by(user_id=user.id).first():
+            setting = Settings(user_id=user.id)
+            db.session.add(setting)
+
         db.session.commit()
 
         token = AuthService.create_token(str(user.id), expiry_minutes=60)
@@ -121,8 +127,6 @@ def validate_account(token):
             return jsonify({'error': 'User not found'}), 404
 
         user.is_validated = True
-        setting = Settings(user_id=user.id)
-        db.session.add(setting)
         db.session.commit()
         return jsonify({'message': 'Account validated successfully'})
     except Exception as e:
