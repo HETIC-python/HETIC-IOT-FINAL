@@ -13,19 +13,8 @@ import {
 } from "react-native";
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
-
-type IWorkspace = {
-  id: string;
-  name: string;
-  description: string;
-  is_active: boolean;
-};
-
-interface CreateWorkspaceModalProps {
-  isVisible: boolean;
-  onClose: () => void;
-  onSubmit: (data: { name: string; description: string }) => Promise<void>;
-}
+import { IWorkspace } from "@/src/utils/Types";
+import { CreateWorkspaceModalProps } from "@/src/utils/Interfaces";
 
 function CreateWorkspaceModal({
   isVisible,
@@ -129,6 +118,7 @@ function ListWorkspace() {
     </View>
   );
 }
+
 export default function Workspace() {
   const [workspaces, setWorkspaces] = useState<IWorkspace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -229,7 +219,7 @@ export default function Workspace() {
         //     <Text className="text-white font-semibold">Create Workspace</Text>
         //   </TouchableOpacity>
         // </View>
-        <Dashboard />
+          <Dashboard />
       ) : (
         <View>
           <Dashboard />
