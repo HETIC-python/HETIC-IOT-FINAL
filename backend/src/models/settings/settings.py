@@ -15,7 +15,7 @@ class Settings(db.Model):
     def to__dict(self):
         return {
             "userId": self.user_id,
-            "emailNotif": self.email_notif,
-            "mobileNotif": self.mobile_notif,
-            "themeMod": self.theme_mode
+            "email_notif": self.email_notif,
+            "mobile_notif": self.mobile_notif,
+            "theme_mod": self.theme_mode
         }

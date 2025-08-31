@@ -185,9 +185,9 @@ export default function Settings() {
     </View>
   );
 
-  const toggleEmail = async () => {
+  const toggleEmailNotif = async () => {
     try {
-      const res = await fetch(`${SERVER_API_URL}/api/settings/email`, {
+      const res = await fetch(`${SERVER_API_URL}/api/settings/email_notif`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -197,6 +197,23 @@ export default function Settings() {
       if (!res.ok) throw new Error("Toggle failed");
       const json = await res.json();
       setEmailNotifications(json.email_notif);
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }
+
+  const toggleMobileNotif = async () => {
+    try {
+      const res = await fetch(`${SERVER_API_URL}/api/settings/mobile_notif`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) throw new Error("Toggle failed");
+      const json = await res.json();
+      setNotificationsEnabled(json.email_notif);
     } catch (error) {
       console.log("Error", error);
     }
@@ -235,13 +252,13 @@ export default function Settings() {
           {renderSettingItem(
             "Push Notifications", 
             notificationsEnabled, 
-            setNotificationsEnabled,
+            () => toggleMobileNotif(),
             "Receive alerts for sensor data changes"
           )}
           {renderSettingItem(
             "Email Notifications", 
             emailNotifications, 
-            () => toggleEmail()
+            () => toggleEmailNotif()
           )}
         </View>
 
