@@ -1,5 +1,13 @@
-import { ArrowRight, FileText, Heart, Mail, MessageCircle, Shield } from "lucide-react";
+import {
+  ArrowRight,
+  FileText,
+  Heart,
+  Mail,
+  MessageCircle,
+  Shield,
+} from "lucide-react";
 import { Button } from "./Button";
+import { Link } from "react-router-dom";
 
 interface FooterLink {
   label: string;
@@ -26,9 +34,21 @@ const footerSections: FooterSection[] = [
   {
     title: "Support",
     links: [
-      { label: "Help Center", href: "#help", icon: <FileText className="h-4 w-4" /> },
-      { label: "Contact Us", href: "#contact", icon: <Mail className="h-4 w-4" /> },
-      { label: "Live Chat", href: "#chat", icon: <MessageCircle className="h-4 w-4" /> },
+      {
+        label: "Help Center",
+        href: "#help",
+        icon: <FileText className="h-4 w-4" />,
+      },
+      {
+        label: "Contact Us",
+        href: "#contact",
+        icon: <Mail className="h-4 w-4" />,
+      },
+      {
+        label: "Live Chat",
+        href: "#chat",
+        icon: <MessageCircle className="h-4 w-4" />,
+      },
       { label: "Warranty", href: "#warranty" },
       { label: "Returns", href: "#returns" },
     ],
@@ -36,7 +56,11 @@ const footerSections: FooterSection[] = [
   {
     title: "Legal",
     links: [
-      { label: "Privacy Policy", href: "#privacy", icon: <Shield className="h-4 w-4" /> },
+      {
+        label: "Privacy Policy",
+        href: "#privacy",
+        icon: <Shield className="h-4 w-4" />,
+      },
       { label: "Terms of Service", href: "#terms" },
       { label: "Shipping Policy", href: "#shipping" },
       { label: "Refund Policy", href: "#refund" },
@@ -78,15 +102,25 @@ export function Footer() {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join hundreds of remote workers who've optimized their environment for peak productivity. 
-            Your perfect workspace is just one kit away.
+            Join hundreds of remote workers who've optimized their environment
+            for peak productivity. Your perfect workspace is just one kit away.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" variant="default" className="text-lg px-8 py-4 h-auto">
-              Order Your Kit - $199
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-4 h-auto">
+            <Link to={"/kit"}>
+              <Button
+                size="lg"
+                variant="default"
+                className="text-lg px-8 py-4 h-auto"
+              >
+                Order Your Kit - $199
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-lg px-8 py-4 h-auto"
+            >
               Schedule Demo Call
             </Button>
           </div>
@@ -119,7 +153,8 @@ export function Footer() {
                 </span>
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Professional-grade environmental monitoring made simple for remote workers everywhere.
+                Professional-grade environmental monitoring made simple for
+                remote workers everywhere.
               </p>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Heart className="h-4 w-4 text-accent" />
@@ -129,7 +164,11 @@ export function Footer() {
 
             {/* Dynamic Footer Sections */}
             {footerSections.map((section, index) => (
-              <FooterSection key={index} title={section.title} links={section.links} />
+              <FooterSection
+                key={index}
+                title={section.title}
+                links={section.links}
+              />
             ))}
           </div>
 
