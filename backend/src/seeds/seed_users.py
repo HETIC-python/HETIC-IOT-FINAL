@@ -2,13 +2,15 @@ from datetime import datetime
 
 from flask import current_app
 from src.extensions import db
-from src.models import Sensor, Task, User, Workspace
+from src.models import Sensor, Settings, Task, User, Workspace
 from src.service.auth_service import AuthService
 
 
 def seed_users():
     try:
         User.query.delete()
+        Settings.query.delete()
+        
         users = [
             User(
                 username='admin',

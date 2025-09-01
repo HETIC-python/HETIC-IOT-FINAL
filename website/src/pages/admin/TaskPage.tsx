@@ -1,6 +1,5 @@
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { SERVER_API_URL } from "../../utils/api";
 
 interface Sensor {
@@ -110,7 +109,7 @@ function CreateTaskModal({ isOpen, onClose, onSuccess }: CreateTaskModalProps) {
 }
 
 export default function TaskPage() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

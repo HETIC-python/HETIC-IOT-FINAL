@@ -15,6 +15,7 @@ import HomePage from "./pages/HomePage";
 import { KitPage } from "./pages/KitPage";
 import SignIn from "./pages/Sigin";
 import { SuccessPage } from "./pages/SuccessPage";
+import ValidateAccount from "./pages/Validate";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/kit" element={<KitPage />} />
             <Route path="/success" element={<SuccessPage />} />
             <Route path="/signin" element={<SignIn />} />
+            <Route path="/validate" element={<ValidateAccount />} />
 
             <Route
               path="/admin"

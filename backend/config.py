@@ -2,6 +2,7 @@ import os
 
 
 class Config:
+    TESTING = False
     SQLALCHEMY_DATABASE_URI = os.getenv('POSTGRES_URI', 'postgresql://postgres:postgres@db:5432/iot_db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     INFLUXDB_URL = os.getenv('INFLUXDB_URL', 'http://localhost:8086')
@@ -16,6 +17,7 @@ class Config:
     SECRET_KEY = 'test-secret-key'
     MAIL_DEFAULT_SENDER = 'example@gmail.com'
     WEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
+    SEND_EMAILS = True
 
 
 class TestConfig:
@@ -25,3 +27,4 @@ class TestConfig:
     SECRET_KEY = 'test-secret-key'
     MAIL_DEFAULT_SENDER = 'test@example.com'
     FRONTEND_URL = 'http://localhost:3000'
+    SEND_EMAILS = False

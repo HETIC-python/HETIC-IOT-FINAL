@@ -3,6 +3,8 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   Text,
   TextInput,
   TouchableOpacity,
@@ -71,68 +73,76 @@ export default function ForgotPassword() {
   };
 
   return (
-    <View className="flex-1 justify-center p-4">
-      <View className="mb-8">
-        <Text className="text-2xl font-bold text-center mb-2">
-          Reset Password
-        </Text>
-        <Text className="text-secondary-600 text-center">
-          Enter your email address and we&apos;ll send you instructions to reset your
-          password.
-        </Text>
-      </View>
-
-      <View className="space-y-4">
-        {error && (
-          <View className="p-3 bg-error/10 rounded-md">
-            <Text className="text-error text-center">{error}</Text>
-          </View>
-        )}
-
-        {successMessage && (
-          <View className="p-3 bg-success/10 rounded-md">
-            <Text className="text-success text-center">{successMessage}</Text>
-          </View>
-        )}
-
-        <View>
-          <TextInput
-            className="input-base-style"
-            placeholder="Enter your email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            editable={!isLoading}
-          />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+    >
+      <View className="flex-1 justify-center p-4">
+        <View className="mb-8">
+          <Text className="text-2xl font-bold text-center mb-2">
+            Reset Password
+          </Text>
+          <Text className="text-secondary-600 text-center">
+            Enter your email address and we&apos;ll send you instructions to
+            reset your password.
+          </Text>
         </View>
 
-        <TouchableOpacity
-          className={`w-full py-3 rounded-md ${
-            isLoading ? "bg-primary-300" : "bg-primary-500"
-          }`}
-          onPress={handleResetPassword}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text className="text-white text-center font-semibold">
-              Send Reset Instructions
-            </Text>
+        <View className="space-y-4">
+          {error && (
+            <View className="p-3 bg-error/10 rounded-md">
+              <Text className="text-error text-center">{error}</Text>
+            </View>
           )}
-        </TouchableOpacity>
 
-        <TouchableOpacity
-          className="mt-4"
-          onPress={() => router.replace("/sign-in")}
-          disabled={isLoading}
-        >
-          <Text className="text-secondary-600 text-center">
-            ← Back to Sign In
-          </Text>
-        </TouchableOpacity>
+          {successMessage && (
+            <View className="p-3 bg-success/10 rounded-md">
+              <Text className="text-success text-center">{successMessage}</Text>
+            </View>
+          )}
+
+          <View>
+            <TextInput
+              className="input-base-style"
+              placeholder="Enter your email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              editable={!isLoading}
+            />
+          </View>
+
+          <View style={{ marginBottom: 16 }}>
+            <TouchableOpacity
+              className={`w-full py-3 rounded-md ${
+                isLoading ? "bg-primary-300" : "bg-primary-500"
+              }`}
+              onPress={handleResetPassword}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="text-white text-center font-semibold">
+                  Send Reset Instructions
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            className="mt-4"
+            onPress={() => router.replace("/sign-in")}
+            disabled={isLoading}
+          >
+            <Text className="text-secondary-600 text-center">
+              ← Back to Sign In
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

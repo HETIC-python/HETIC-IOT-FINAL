@@ -2,6 +2,8 @@ import { loadStripe } from "@stripe/stripe-js";
 import { useState } from "react";
 import Autocomplete from "react-google-autocomplete";
 import { KeyFeatures, WhatsIncluded, WhyChooseUs } from "../components/Kit";
+import { SERVER_API_URL } from "../utils/api";
+import HERO_IMAGE from "./../assets/iot-hero.jpg";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -29,7 +31,7 @@ function AddressModal({ isOpen, onClose }: AddressModalProps) {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/create-checkout-session`,
+        `${SERVER_API_URL}/api/create-checkout-session`,
         {
           method: "POST",
           headers: {
@@ -48,6 +50,7 @@ function AddressModal({ isOpen, onClose }: AddressModalProps) {
       }
 
       const data = await response.json();
+      console.log("Checkout session created:", data);
       const stripe = await stripePromise;
       if (!stripe) throw new Error("Stripe failed to load");
 
@@ -267,7 +270,7 @@ export function KitPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-lg shadow-lg overflow-hidden">
           <div>
             <img
-              src="/src/assets/iot-hero.jpg"
+              src={HERO_IMAGE}
               alt="IoT Kit"
               className="w-full h-80 object-cover"
             />

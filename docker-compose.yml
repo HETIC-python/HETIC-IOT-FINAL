@@ -20,6 +20,8 @@ x-common-env: &common-env
   SEND_EMAIL_PASSWORD: ${SEND_EMAIL_PASSWORD}
   MISTRAL_API_KEY: ${MISTRAL_API_KEY}
   FLOWER_UNAUTHENTICATED_API: true
+  SERVER_API_URL: ${SERVER_API_URL}
+  FRONTEND_URL: ${FRONTEND_URL}
 
 services:
   web:
@@ -136,6 +138,27 @@ services:
       - ./backend:/queue
     env_file:
       - .env
+  website:
+    container_name: front
+    stdin_open: true
+    build:
+      context: ./website
+      dockerfile: Dockerfile.prod
+    environment:
+      - NODE_ENV=production
+      - SERVER_API_URL=${SERVER_API_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
+      #      - REACT_APP_API_URL= ${API_URL}
+      #      - REACT_APP_STATIC_URL=${STATIC_URL}
+      #      - REACT_APP_API_TOKEN= ${API_TOKEN}
+      #      - REACT_APP_AZUREAD_APPLICATION_ID= ${AZUREAD_APPLICATION_ID}
+      #      - REACT_APP_AZUREAD_BaseUri= ${AZUREAD_BASE_URI}
+    ports:
+      - "127.0.0.1:5173:80"
+    volumes:
+      - ./website:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
 volumes:
   db_data:
   redis_data:
+  node_modules:

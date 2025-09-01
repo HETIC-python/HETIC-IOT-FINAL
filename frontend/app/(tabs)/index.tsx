@@ -1,4 +1,5 @@
 import { SERVER_API_URL } from "@/config/api";
+import { Header } from "@/src/components/Header";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -23,6 +24,7 @@ export default function Index() {
   console.log(data, isError, isLoading);
   return (
     <View className="flex-1 bg-white">
+      <Header title="User Profile" />
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <Text className="text-lg font-bold mb-4">User Profile</Text>
       </ScrollView>

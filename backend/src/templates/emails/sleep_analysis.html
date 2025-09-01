@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sleep Analysis Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background: #fff;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 32px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        }
+        h1 {
+            color: #2d3e50;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+        .content {
+            font-size: 16px;
+            color: #444;
+            margin-bottom: 24px;
+        }
+        .footer {
+            font-size: 13px;
+            color: #888;
+            margin-top: 32px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Sleep Analysis Report</h1>
+        <div class="content">
+            {{ message | safe }}
+        </div>
+        <div class="footer">
+            If you have any questions, feel free to reply to this email.<br>
+            Thank you for trusting us with your sleep health.
+        </div>
+    </div>
+</body>
+</html>
