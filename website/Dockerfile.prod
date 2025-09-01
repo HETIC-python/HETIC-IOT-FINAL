@@ -3,10 +3,13 @@ FROM node:20 AS builder
 # Set the working directory
 WORKDIR /usr/src/app
 
+ARG VITE_SERVER_API_URL
+ARG VITE_FRONTEND_URL
+
 ENV NODE_ENV=production
-ENV VITE_API_URL=http://127.0.0.1:5001
-
-
+ENV VITE_API_URL=http://84.234.20.12:5001
+ENV VITE_SERVER_API_URL=${VITE_SERVER_API_URL}
+ENV VITE_FRONTEND_URL=${VITE_FRONTEND_URL}
 
 # Copy package.json and package-lock.json
 COPY ./package.json ./

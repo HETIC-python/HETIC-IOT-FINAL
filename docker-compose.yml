@@ -159,10 +159,13 @@ services:
     build:
       context: ./website
       dockerfile: Dockerfile.prod
+      args:
+        - VITE_FRONTEND_URL=${FRONTEND_URL}
+        - VITE_SERVER_API_URL=${SERVER_API_URL}
     environment:
       - NODE_ENV=production
-      - SERVER_API_URL=${SERVER_API_URL}
-      - FRONTEND_URL=${FRONTEND_URL}
+      - VITE_SERVER_API_URL=${SERVER_API_URL}
+      - VITE_FRONTEND_URL=${FRONTEND_URL}
       #      - REACT_APP_API_URL= ${API_URL}
       #      - REACT_APP_STATIC_URL=${STATIC_URL}
       #      - REACT_APP_API_TOKEN= ${API_TOKEN}
