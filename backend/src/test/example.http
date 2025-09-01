@@ -1,5 +1,5 @@
 ### Variables
-@baseUrl = http://localhost:5000/api
+@baseUrl = http://localhost:5001/api
 @authToken = your_jwt_token_here
 
 ### Authentication

@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
   // const location = useLocation();
   const { signIn } = useAuth();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,18 +22,18 @@ const SignIn: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
       await signIn(formData.email, formData.password);
-      console.log('User signed in successfully');
+      console.log("User signed in successfully");
       navigate("/", { replace: true });
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('Invalid email or password');
+        setError("Invalid email or password");
       }
     } finally {
       setIsLoading(false);
@@ -92,7 +92,7 @@ const SignIn: React.FC = () => {
               disabled={isLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300"
             >
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? "Signing in..." : "Sign in"}
             </button>
           </div>
         </form>

@@ -7,7 +7,7 @@ RUN apt-get update && \
 WORKDIR /usr/src/app
 
 COPY requirements.txt .
-RUN pip install --upgrade pip && \
+RUN pip install --upgrade  pip && \
     pip install --no-cache-dir --no-binary psycopg2-binary -r requirements.txt
 
 RUN touch /tmp/my_lstm_model.keras
