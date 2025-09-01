@@ -162,6 +162,7 @@ services:
       args:
         - VITE_FRONTEND_URL=${FRONTEND_URL}
         - VITE_SERVER_API_URL=${SERVER_API_URL}
+        - VITE_STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
     environment:
       - NODE_ENV=production
       - VITE_SERVER_API_URL=${SERVER_API_URL}
