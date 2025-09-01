@@ -1,5 +1,7 @@
 import os
+
 import tensorflow as tf
+
 
 class LSTM:
     def __init__(self, model_path="/tmp/my_lstm_model.keras"):
@@ -9,7 +11,11 @@ class LSTM:
     def load_model(self):
         if os.path.exists(self.model_path):
             print(f"✅ Loading model from {self.model_path}...")
-            self.model = tf.keras.models.load_model(self.model_path)
+            try:
+                self.model = tf.keras.models.load_model(self.model_path)
+            except Exception as e:
+                print(f"❌ Failed to load model: {e}")
+                self.model = None
         else:
             print(f"⚠️ Model file not found at {self.model_path}")
             self.model = None
