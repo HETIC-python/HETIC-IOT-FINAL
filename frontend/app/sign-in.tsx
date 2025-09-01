@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useAuth } from "../src/context/AuthContext";
 
 const validateEmail = (email: string): boolean => {
@@ -52,61 +52,67 @@ export default function SignIn() {
   }
 
   return (
-    <View className="flex-1 justify-center p-4">
-      <View className="h-12 mb-4">
-        {error && (
-          <View className="p-3 bg-error/10 rounded-md">
-            <Text className="text-error text-center">{error}</Text>
-          </View>
-        )}
-      </View>
-
-      <View className="flex flex-col items-stretch gap-5">
-        <View>
-          <TextInput
-            className="input-base-style flex-auto"
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+    >
+      <View className="flex-1 justify-center p-4">
+        <View className="h-12 mb-4">
+          {error && (
+            <View className="p-3 bg-error/10 rounded-md">
+              <Text className="text-error text-center">{error}</Text>
+            </View>
+          )}
         </View>
-        <View>
-          <TextInput
-            className="input-base-style flex-auto"
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
+
+        <View className="flex flex-col items-stretch gap-5">
+          <View>
+            <TextInput
+              className="input-base-style flex-auto"
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+          </View>
+          <View>
+            <TextInput
+              className="input-base-style flex-auto"
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+            <TouchableOpacity
+              className="mt-2"
+              onPress={() => router.push("/forgot-password")}
+            >
+              <Text className="text-primary-500 text-sm text-right">
+                Forgot Password?
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View className="flex flex-col items-center gap-5 mt-6">
           <TouchableOpacity
-            className="mt-2"
-            onPress={() => router.push("/forgot-password")}
+            className="w-full bg-primary-500 py-3 rounded-md"
+            onPress={handleSignIn}
           >
-            <Text className="text-primary-500 text-sm text-right">
-              Forgot Password?
+            <Text className="text-white text-center font-semibold">Sign In</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="w-full bg-secondary-200 py-3 rounded-md"
+            onPress={() => router.push("/sign-up")}
+          >
+            <Text className="text-secondary-800 text-center font-semibold">
+              Sign Up
             </Text>
           </TouchableOpacity>
         </View>
       </View>
-
-      <View className="flex flex-col items-center gap-5 mt-6">
-        <TouchableOpacity
-          className="w-full bg-primary-500 py-3 rounded-md"
-          onPress={handleSignIn}
-        >
-          <Text className="text-white text-center font-semibold">Sign In</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="w-full bg-secondary-200 py-3 rounded-md"
-          onPress={() => router.push("/sign-up")}
-        >
-          <Text className="text-secondary-800 text-center font-semibold">
-            Sign Up
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

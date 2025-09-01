@@ -21,4 +21,5 @@ class Sensor(db.Model):
             "name": self.name,
             "status": self.status,
             "workspace_id": self.workspace_id,
+            "source_id": self.source_id,
         }

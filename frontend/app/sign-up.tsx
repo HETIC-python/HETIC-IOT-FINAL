@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from "react-native";
 import * as Yup from "yup";
 import { useAuth } from "../src/context/AuthContext";
 
@@ -134,148 +134,154 @@ export default function SignUp() {
   };
 
   return (
-    <View className="flex-1 justify-center p-4">
-      <View className="h-12 mb-4">
-        {error && (
-          <View className="p-3 bg-error/10 rounded-md">
-            <Text className="text-error text-center">{error}</Text>
-          </View>
-        )}
-      </View>
-
-      <View className="flex flex-col gap-4">
-        <View>
-          <Text className="text-secondary-700 text-sm mb-1">First Name</Text>
-          <TextInput
-            className="input-base-style"
-            placeholder="Enter your first name"
-            value={formData.firstName}
-            onChangeText={(value) => handleChange("firstName", value)}
-          />
-          {errors.firstName && (
-            <Text className="text-error text-xs mt-2">{errors.firstName}</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+    >
+      <View className="flex-1 justify-center p-4">
+        <View className="h-12 mb-4">
+          {error && (
+            <View className="p-3 bg-error/10 rounded-md">
+              <Text className="text-error text-center">{error}</Text>
+            </View>
           )}
         </View>
 
-        <View>
-          <Text className="text-secondary-700 text-sm mb-1">Last Name</Text>
-          <TextInput
-            className="input-base-style"
-            placeholder="Enter your last name"
-            value={formData.lastName}
-            onChangeText={(value) => handleChange("lastName", value)}
-          />
-          {errors.lastName && (
-            <Text className="text-error text-sm mt-1">{errors.lastName}</Text>
-          )}
-        </View>
-
-        <View>
-          <Text className="text-secondary-700 text-sm mb-1">Username</Text>
-          <TextInput
-            className="input-base-style"
-            placeholder="Enter your username"
-            value={formData.username}
-            onChangeText={(value) => handleChange("username", value)}
-            autoCapitalize="none"
-          />
-          {errors.username && (
-            <Text className="text-error text-sm mt-1">{errors.username}</Text>
-          )}
-        </View>
-
-        <View>
-          <Text className="text-secondary-700 text-sm mb-1">Email</Text>
-          <TextInput
-            className="input-base-style"
-            placeholder="Enter your email"
-            value={formData.email}
-            onChangeText={(value) => handleChange("email", value)}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-          {errors.email && (
-            <Text className="text-error text-sm mt-1">{errors.email}</Text>
-          )}
-        </View>
-
-        <View>
-          <Text className="text-secondary-700 text-sm mb-1">Password</Text>
-          <View className="flex-row items-center">
+        <View className="flex flex-col gap-4">
+          <View>
+            <Text className="text-secondary-700 text-sm mb-1">First Name</Text>
             <TextInput
-              className="input-base-style flex-auto"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChangeText={(value) => handleChange("password", value)}
-              secureTextEntry={!showPassword}
+              className="input-base-style"
+              placeholder="Enter your first name"
+              value={formData.firstName}
+              onChangeText={(value) => handleChange("firstName", value)}
             />
-            <TouchableOpacity
-              className="absolute right-2"
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              <Text className="text-secondary-600">
-                {showPassword ? "Hide" : "Show"}
-              </Text>
-            </TouchableOpacity>
+            {errors.firstName && (
+              <Text className="text-error text-xs mt-2">{errors.firstName}</Text>
+            )}
           </View>
-          {errors.password && (
-            <Text className="text-error text-sm mt-1">{errors.password}</Text>
-          )}
-        </View>
 
-        <View>
-          <Text className="text-secondary-700 text-sm mb-1">
-            Confirm Password
-          </Text>
-          <View className="flex-row items-center">
+          <View>
+            <Text className="text-secondary-700 text-sm mb-1">Last Name</Text>
             <TextInput
-              className="input-base-style flex-auto"
-              placeholder="Confirm your password"
-              value={formData.confirmPassword}
-              onChangeText={(value) => handleChange("confirmPassword", value)}
-              secureTextEntry={!showConfirmPassword}
+              className="input-base-style"
+              placeholder="Enter your last name"
+              value={formData.lastName}
+              onChangeText={(value) => handleChange("lastName", value)}
             />
-            <TouchableOpacity
-              className="absolute right-2"
-              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              <Text className="text-secondary-600">
-                {showConfirmPassword ? "Hide" : "Show"}
-              </Text>
-            </TouchableOpacity>
+            {errors.lastName && (
+              <Text className="text-error text-sm mt-1">{errors.lastName}</Text>
+            )}
           </View>
-          {errors.confirmPassword && (
-            <Text className="text-error text-sm mt-1">
-              {errors.confirmPassword}
+
+          <View>
+            <Text className="text-secondary-700 text-sm mb-1">Username</Text>
+            <TextInput
+              className="input-base-style"
+              placeholder="Enter your username"
+              value={formData.username}
+              onChangeText={(value) => handleChange("username", value)}
+              autoCapitalize="none"
+            />
+            {errors.username && (
+              <Text className="text-error text-sm mt-1">{errors.username}</Text>
+            )}
+          </View>
+
+          <View>
+            <Text className="text-secondary-700 text-sm mb-1">Email</Text>
+            <TextInput
+              className="input-base-style"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChangeText={(value) => handleChange("email", value)}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+            {errors.email && (
+              <Text className="text-error text-sm mt-1">{errors.email}</Text>
+            )}
+          </View>
+
+          <View>
+            <Text className="text-secondary-700 text-sm mb-1">Password</Text>
+            <View className="flex-row items-center">
+              <TextInput
+                className="input-base-style flex-auto"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChangeText={(value) => handleChange("password", value)}
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity
+                className="absolute right-2"
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <Text className="text-secondary-600">
+                  {showPassword ? "Hide" : "Show"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {errors.password && (
+              <Text className="text-error text-sm mt-1">{errors.password}</Text>
+            )}
+          </View>
+
+          <View>
+            <Text className="text-secondary-700 text-sm mb-1">
+              Confirm Password
             </Text>
-          )}
+            <View className="flex-row items-center">
+              <TextInput
+                className="input-base-style flex-auto"
+                placeholder="Confirm your password"
+                value={formData.confirmPassword}
+                onChangeText={(value) => handleChange("confirmPassword", value)}
+                secureTextEntry={!showConfirmPassword}
+              />
+              <TouchableOpacity
+                className="absolute right-2"
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                <Text className="text-secondary-600">
+                  {showConfirmPassword ? "Hide" : "Show"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {errors.confirmPassword && (
+              <Text className="text-error text-sm mt-1">
+                {errors.confirmPassword}
+              </Text>
+            )}
+          </View>
         </View>
-      </View>
 
-      <View className="flex flex-col items-center gap-5 mt-6">
-        <TouchableOpacity
-          className="w-full bg-primary-500 py-3 rounded-md"
-          onPress={handleSignUp}
-        >
-          <Text className="text-white text-center font-semibold">Sign Up</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="w-full bg-secondary-200 py-3 rounded-md"
-          onPress={() => router.push("/sign-in")}
-        >
-          <Text className="text-secondary-800 text-center font-semibold">
-            Back to Sign In
-          </Text>
-        </TouchableOpacity>
-      </View>
+        <View className="flex flex-col items-center gap-5 mt-6">
+          <TouchableOpacity
+            className="w-full bg-primary-500 py-3 rounded-md"
+            onPress={handleSignUp}
+          >
+            <Text className="text-white text-center font-semibold">Sign Up</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="w-full bg-secondary-200 py-3 rounded-md"
+            onPress={() => router.push("/sign-in")}
+          >
+            <Text className="text-secondary-800 text-center font-semibold">
+              Back to Sign In
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-      <SuccessModal
-        isVisible={showSuccessModal}
-        onClose={() => {
-          setShowSuccessModal(false);
-          router.replace("/sign-in");
-        }}
-      />
-    </View>
+        <SuccessModal
+          isVisible={showSuccessModal}
+          onClose={() => {
+            setShowSuccessModal(false);
+            router.replace("/sign-in");
+          }}
+        />
+      </View>
+    </KeyboardAvoidingView>
   );
 }

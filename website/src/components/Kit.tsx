@@ -257,7 +257,7 @@ export function KeyFeatures() {
             className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-blue-50 rounded-lg transition-all hover:shadow-md"
           >
             <div className="flex-shrink-0">{feature.icon}</div>
-            <span className="text-sm sm:text-base text-gray-700">
+            <span className="text-sm sm:text-base text-gray-700 md:break-all lg:break-keep">
               {feature.title}
             </span>
           </div>

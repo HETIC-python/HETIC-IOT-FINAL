@@ -1,10 +1,11 @@
+import logging
+
 from flask import Blueprint, jsonify, request
 from src.extensions import db
-from src.models import User
+from src.models import Settings, User
 from src.schemas.user_schema import UserLoginSchema, UserSignupSchema
 from src.service.auth_service import AuthService
 from src.service.mail_service import MailService
-import logging
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)
@@ -32,6 +33,12 @@ def signup():
         )
         
         db.session.add(user)
+        db.session.flush() 
+
+        if not Settings.query.filter_by(user_id=user.id).first():
+            setting = Settings(user_id=user.id)
+            db.session.add(setting)
+
         db.session.commit()
 
         token = AuthService.create_token(str(user.id), expiry_minutes=60)

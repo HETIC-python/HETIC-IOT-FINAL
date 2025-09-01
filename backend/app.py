@@ -1,6 +1,8 @@
 from flask import jsonify
 from flask_cors import CORS
 from src import create_app
+from src.models import Sensor, Task
+from src.service.mail_service import MailService
 from src.service.redis_client import redis_client
 from tasks import treat_sleep_analysis, treat_work_analysis
 
@@ -22,10 +24,16 @@ CORS(
 @app.route("/")
 def home():
     print("Home route accessed")
-    treat_sleep_analysis.delay()
-    treat_work_analysis.delay()
-    return jsonify({"message": "Welcome to the Flask app! uwu"}), 200
 
+    # task_m = Task.query.filter_by(name="sleep").first()
+    # sensors = task_m.sensors if task_m else []
+    # print(f"Sensors fetched: {sensors}")
+    # print(f"Task fetched: {task_m}")
+    # sensors = Sensor.query.filter_by(task_id=task_m.id).all()
+    # treat_sleep_analysis.delay()
+    # treat_work_analysis.delay()
+    # MailService.send_work_analysis_email("test@example.com", {"data": "test"})
+    return jsonify({"message": "Welcome to the Flask app! uwu"}), 200
 
 
 if __name__ == "__main__":

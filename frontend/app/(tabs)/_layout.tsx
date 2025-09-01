@@ -4,13 +4,11 @@ import { Platform } from "react-native";
 
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
+import { IconSymbolIos } from "@/components/ui/IconSymbol.ios";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
@@ -49,36 +47,48 @@ export default function TabLayout() {
         name="workspace"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol name="home" color={color} />
-          ),
+          tabBarIcon: ({ color }) =>
+            Platform.OS === "ios" ? (
+              <IconSymbolIos name="house" color={color} />
+            ) : (
+              <IconSymbol name="home" color={color} />
+            ),
         }}
       />
       <Tabs.Screen
         name="chat"
         options={{
           title: "Assistant",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol name="chatbubble" color={color} />
-          ),
+          tabBarIcon: ({ color }) =>
+            Platform.OS === "ios" ? (
+              <IconSymbolIos name="bubble.left" color={color} />
+            ) : (
+              <IconSymbol name="chatbubble" color={color} />
+            ),
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: "Settings",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol name="settings" color={color} />
-          ),
+          tabBarIcon: ({ color }) =>
+            Platform.OS === "ios" ? (
+              <IconSymbolIos name="gear" color={color} />
+            ) : (
+              <IconSymbol name="settings" color={color} />
+            ),
         }}
       />
       <Tabs.Screen
         name="index"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol name="person" color={color} />
-          ),
+          tabBarIcon: ({ color }) =>
+            Platform.OS === "ios" ? (
+              <IconSymbolIos name="person" color={color} />
+            ) : (
+              <IconSymbol name="person" color={color} />
+            ),
         }}
       />
     </Tabs>
