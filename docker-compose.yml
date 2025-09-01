@@ -4,7 +4,7 @@
 x-common-env: &common-env
   FLASK_APP: app.py
   FLASK_ENV: development
-  POSTGRES_URI: postgresql://postgres:postgres@db:5432/iot_db
+  POSTGRES_URI: ${DATABASE_URL}
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
   POSTGRES_DB: iot_db
@@ -71,6 +71,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    command: >
+      postgres
+      -c shared_buffers=64MB
+      -c max_connections=20
+      -c effective_cache_size=128MB
 
   redis:
     image: redis:latest
@@ -84,6 +89,7 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+    command: ["redis-server", "--maxmemory", "32mb", "--maxmemory-policy", "allkeys-lru"]
 
   adminer:
     image: adminer
