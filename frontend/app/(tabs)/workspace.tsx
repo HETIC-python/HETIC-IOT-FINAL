@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Text,
+  ScrollView,
   TextInput,
   TouchableOpacity,
   View,
@@ -155,6 +156,7 @@ export default function Workspace() {
     }
   };
 
+  
   const handleCreateWorkspace = async (data: {
     name: string;
     description: string;
@@ -193,6 +195,8 @@ export default function Workspace() {
 
   return (
     <View className="flex-1 bg-gray-50">
+      <ScrollView className="flex-1 p-4">
+
       <Header title="My Workspaces" />
       <ListWorkspace />
 
@@ -207,7 +211,9 @@ export default function Workspace() {
 
       {isLoading ? (
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#0072ff" />
+          <ScrollView className="flex-1 p-4">
+            <ActivityIndicator size="large" color="#0072ff" />
+          </ScrollView>
         </View>
       ) : workspaces.length === 0 ? (
         // <View className="flex-1 justify-center items-center px-4 -mt-16">
@@ -221,10 +227,14 @@ export default function Workspace() {
         //     <Text className="text-white font-semibold">Create Workspace</Text>
         //   </TouchableOpacity>
         // </View>
-        <Dashboard />
+        <ScrollView className="flex-1 p-4">
+          <Dashboard />
+        </ScrollView>
       ) : (
         <View>
-          <Dashboard />
+          <ScrollView className="flex-1 p-4">
+
+            <Dashboard />
 
           {/* <FlatList
             data={workspaces}
@@ -254,6 +264,8 @@ export default function Workspace() {
               </TouchableOpacity>
             )}
           /> */}
+          </ScrollView>
+
         </View>
       )}
 
@@ -262,6 +274,8 @@ export default function Workspace() {
         onClose={() => setShowCreateModal(false)}
         onSubmit={handleCreateWorkspace}
       />
+      </ScrollView>
+
     </View>
   );
 }
