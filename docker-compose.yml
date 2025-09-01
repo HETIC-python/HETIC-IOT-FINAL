@@ -27,7 +27,7 @@ services:
   web:
     build: ./backend
     ports:
-      - "127.0.0.1:5000:5000"
+      - "5000:5000"
       - "8000:8000"
       - "5001:5001"
       # - "5000:5000"
@@ -169,7 +169,7 @@ services:
       #      - REACT_APP_AZUREAD_APPLICATION_ID= ${AZUREAD_APPLICATION_ID}
       #      - REACT_APP_AZUREAD_BaseUri= ${AZUREAD_BASE_URI}
     ports:
-      - "127.0.0.1:5173:80"
+      - "5173:80"
     volumes:
       - ./website:/usr/src/app
       - node_modules:/usr/src/app/node_modules
