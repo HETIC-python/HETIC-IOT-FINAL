@@ -40,7 +40,7 @@ export function PrivateRoute({ children, requiredRole }: PrivateRouteProps) {
           });
 
           if (response.ok) {
-            const data = await response.json();
+            // const data = await response.json();
             setIsAuthorized(true);
           } else if (response.status === 401) {
             localStorage.removeItem("token");
