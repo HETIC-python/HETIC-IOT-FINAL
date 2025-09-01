@@ -1,3 +1,5 @@
+import os
+
 from flask import jsonify
 from flask_cors import CORS
 from src import create_app
@@ -33,8 +35,9 @@ def home():
     # treat_sleep_analysis.delay()
     # treat_work_analysis.delay()
     # MailService.send_work_analysis_email("test@example.com", {"data": "test"})
-    return jsonify({"message": "Welcome to the Flask app! uwu"}), 200
+    return jsonify({"message": "Welcome to the Flask app! uwu", "db": os.getenv("POSTGRES_URI", "uwu")}), 200
 
 
 if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
     app.run(host="0.0.0.0", port=5000)
