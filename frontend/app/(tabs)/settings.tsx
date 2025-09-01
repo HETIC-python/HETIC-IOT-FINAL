@@ -12,13 +12,7 @@ import {
 import { SERVER_API_URL } from "../../config/api";
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
-
-type UserProfile = {
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone?: string;
-};
+import { UserProfile } from "@/src/utils/Types";
 
 export default function Settings() {
   const { token, signOut } = useAuth();
@@ -191,6 +185,57 @@ export default function Settings() {
     </View>
   );
 
+  const toggleEmailNotif = async () => {
+    try {
+      const res = await fetch(`${SERVER_API_URL}/api/settings/email_notif`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) throw new Error("Toggle failed");
+      const json = await res.json();
+      setEmailNotifications(json.email_notif);
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }
+
+  const toggleMobileNotif = async () => {
+    try {
+      const res = await fetch(`${SERVER_API_URL}/api/settings/mobile_notif`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) throw new Error("Toggle failed");
+      const json = await res.json();
+      setNotificationsEnabled(json.mobile_notif);
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }
+  
+  const toggleTheme_mode = async () => {
+    try {
+      const res = await fetch(`${SERVER_API_URL}/api/settings/theme_mode`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) throw new Error("Toggle failed");
+      const json = await res.json();
+      setDarkMode(json.theme_mode);
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }
+
   const renderSettingItem = (
     label: string,
     value: boolean,
@@ -224,14 +269,14 @@ export default function Settings() {
           {renderSettingItem(
             "Push Notifications", 
             notificationsEnabled, 
-            setNotificationsEnabled,
+            () => toggleMobileNotif(),
             "Receive alerts for sensor data changes"
           )}
           {renderSettingItem(
             "Email Notifications", 
             emailNotifications, 
-            setEmailNotifications,
-            "Receive weekly summary reports"
+            () => toggleEmailNotif(),
+            "Receive alerts for sensor data changes"
           )}
         </View>
 
@@ -240,7 +285,7 @@ export default function Settings() {
           {renderSettingItem(
             "Dark Mode", 
             darkMode, 
-            setDarkMode,
+            () => toggleTheme_mode(),
             "Enable dark theme for the app"
           )}
         </View>

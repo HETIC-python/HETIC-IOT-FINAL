@@ -10,6 +10,7 @@ from .LSTM.lstm_routes import lstm_bp
 from .weather.weather_route import weather_bp
 from .analytics.analytics_routes import analytics_bp
 from .LLM.mistral import chat_bp
+from .settings.settings import settings_bp
 
 main = Blueprint("main", __name__)
 
@@ -25,3 +26,4 @@ def register_blueprints(app):
     app.register_blueprint(weather_bp, url_prefix="/api")
     app.register_blueprint(analytics_bp, url_prefix="/api")
     app.register_blueprint(chat_bp, url_prefix="/api")
+    app.register_blueprint(settings_bp, url_prefix="/api")
