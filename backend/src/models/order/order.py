@@ -10,7 +10,7 @@ class Order(db.Model):
     id = Column(Integer, primary_key=True)
     stripe_session_id = Column(String, unique=True)
     stripe_payment_intent_id = Column(String, unique=True)
-    customer_order_id = Column(String(50), unique=True, nullable=False)
+    # customer_order_id = Column(String(50), unique=True, nullable=False)
     amount = Column(Float, nullable=False)
     currency = Column(String, default="usd")
     status = Column(String, default="pending")  # pending, completed, failed

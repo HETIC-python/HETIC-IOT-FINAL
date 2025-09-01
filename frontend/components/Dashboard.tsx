@@ -3,11 +3,11 @@ import { useWorkspace } from "@/src/context/WorkspaceContext";
 import { SensorData } from "@/src/utils/Interfaces";
 import React, { useEffect, useState } from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-    useWindowDimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
 } from "react-native";
 import TemperatureSensor from "./sensors/TemperatureSensor";
 type Sensor = {
@@ -99,34 +99,38 @@ export default function Dashboard() {
 
   return (
     <View style={[styles.container]}>
-      <ScrollView contentContainerStyle={[styles.scrollContainer]}>
-        <Text style={[styles.titleDash]}>IoT Dashboard</Text>
+      <ScrollView
+      contentContainerStyle={[styles.scrollContainer]}
+      horizontal={false}
+      showsVerticalScrollIndicator={true}
+      >
+      <Text style={[styles.titleDash]}>IoT Dashboard</Text>
 
-        <View style={[styles.box, styles.fullWidthBox]}>
-          <Text style={[styles.boxText]}>Raspberry Pi Gateway</Text>
-          <Text style={[styles.statusText]}>● Online</Text>
-        </View>
-        <View style={[styles.grid]}>
-          {sensorData.map((data, id) => (
-            <TemperatureSensor
-              key={`${data.source_address}_${id}`}
-              sensorId={data.source_address}
-              temperature={data.temperature}
-              humidity={data.humidity}
-              time={data.time}
-              width={boxWidth}
-            />
-          ))}
-        </View>
+      <View style={[styles.box, styles.fullWidthBox]}>
+        <Text style={[styles.boxText]}>Raspberry Pi Gateway</Text>
+        <Text style={[styles.statusText]}>● Online</Text>
+      </View>
+      <View style={[styles.grid]}>
+        {sensorData.map((data, id) => (
+        <TemperatureSensor
+          key={`${data.source_address}_${id}`}
+          sensorId={data.source_address}
+          temperature={data.temperature}
+          humidity={data.humidity}
+          time={data.time}
+          width={boxWidth}
+        />
+        ))}
+      </View>
 
-        <View style={[styles.box, styles.fullWidthBox]}>
-          <Text style={[styles.boxText]}>System Status</Text>
-          <Text style={[styles.summaryText]}>
-            {Object.values(sensorData).some((data) => data.temperature > 25)
-              ? "⚠️ High temperature detected"
-              : "✅ All systems normal"}
-          </Text>
-        </View>
+      <View style={[styles.box, styles.fullWidthBox]}>
+        <Text style={[styles.boxText]}>System Status</Text>
+        <Text style={[styles.summaryText]}>
+        {Object.values(sensorData).some((data) => data.temperature > 25)
+          ? "⚠️ High temperature detected"
+          : "✅ All systems normal"}
+        </Text>
+      </View>
       </ScrollView>
     </View>
   );

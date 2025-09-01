@@ -28,6 +28,7 @@ def get_orders():
 @order_bp.route("/create-checkout-session", methods=["POST"])
 def create_checkout_session():
     try:
+        FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
         data = request.get_json()
         customer_info = data.get("customerInfo", {})
 
@@ -52,8 +53,8 @@ def create_checkout_session():
             shipping_address_collection={
                 "allowed_countries": ["FR"],
             },
-            success_url=f"{request.host_url}success?session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=f"{request.host_url}cancel",
+            success_url=f"{FRONTEND_URL}/success?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{FRONTEND_URL}/cancel",
         )
 
         # Create order record with customer info

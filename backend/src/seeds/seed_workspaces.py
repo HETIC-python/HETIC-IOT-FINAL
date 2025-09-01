@@ -15,6 +15,7 @@ def seed_workspaces():
         Task.query.delete()
 
         admin_user = User.query.filter_by(email="admin@iot.com").first()
+        test_user = User.query.filter_by(email="test@iot.com").first()
         if not admin_user:
             admin_user = seed_users()
 
@@ -30,7 +31,7 @@ def seed_workspaces():
         workspace_data = [
             {
                 "workspace": Workspace(
-                    user_id=admin_user.id,
+                    user_id=test_user.id,
                     name="Home Office",
                     description="Environment monitoring for home office setup",
                     created_at=datetime.utcnow(),
@@ -57,7 +58,7 @@ def seed_workspaces():
             },
             {
                 "workspace": Workspace(
-                    user_id=admin_user.id,
+                    user_id=test_user.id,
                     name="Server Room",
                     description="Temperature and humidity monitoring for server infrastructure",
                     created_at=datetime.utcnow(),
@@ -79,7 +80,7 @@ def seed_workspaces():
             },
             {
                 "workspace": Workspace(
-                    user_id=admin_user.id,
+                    user_id=test_user.id,
                     name="Living Room",
                     description="Air quality monitoring for living space",
                     created_at=datetime.utcnow(),

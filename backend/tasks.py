@@ -76,6 +76,7 @@ def treat_sensor_work_analysis(sensor: Sensor):
     for data in res:
         ai_msg += f"{data['time']} - {data['temperature']}\n"
     res_ai = AIService.analyze_work_data(ai_msg)
+    
     if res_ai.get("success") == False:
         user = get_workspace_user(sensor)
         if user:
