@@ -32,7 +32,8 @@ services:
       - "5001:5001"
       # - "5000:5000"
       - "5678:5678"
-    environment: *common-env
+    environment:
+      *common-env
       # - FLASK_APP=app.py
       # - FLASK_ENV=development
       # - POSTGRES_URI=postgresql://postgres:postgres@db:5432/iot_db
@@ -51,7 +52,7 @@ services:
       # - SEND_EMAIL_PASSWORD=${SEND_EMAIL_PASSWORD}
       # - MISTRAL_API_KEY=${MISTRAL_API_KEY}
     depends_on:
-      - db
+      # - db
       - redis
     volumes:
       - ./backend:/usr/src/app
@@ -89,14 +90,21 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    command: ["redis-server", "--maxmemory", "32mb", "--maxmemory-policy", "allkeys-lru"]
+    command:
+      [
+        "redis-server",
+        "--maxmemory",
+        "32mb",
+        "--maxmemory-policy",
+        "allkeys-lru",
+      ]
 
   adminer:
     image: adminer
     ports:
       - "8180:8080"
-    depends_on:
-      - db
+    # depends_on:
+    # - db
     environment:
       - ADMINER_DESIGN_DB=iot_db
       - ADMINER_DEFAULT_SYSTEM=pgsql
@@ -107,11 +115,12 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.celery
-    command: celery -A make_celery worker -l info -E
+    command: celery -A make_celery worker -l info -E --concurrency=2 --max-tasks-per-child=50
     depends_on:
       - redis
-    volumes: ['./backend:/queue']
-    environment: *common-env
+    volumes: ["./backend:/queue"]
+    environment:
+      *common-env
       # - FLASK_APP=app.py
       # - FLASK_ENV=development
       # - POSTGRES_URI=postgresql://postgres:postgres@db:5432/iot_db
