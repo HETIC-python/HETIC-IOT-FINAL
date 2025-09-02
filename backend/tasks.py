@@ -36,9 +36,9 @@ def treat_work_analysis():
 
 
 @shared_task(ignore_result=True)
-def add(x, y):
-    return x + y
-
+def add():
+    print("added", 10 + 12)
+    return 10 + 12
 
 @shared_task(ignore_result=True)
 def treat_sensor_sleep_analysis(sensor):

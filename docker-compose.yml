@@ -177,6 +177,17 @@ services:
     volumes:
       - ./website:/usr/src/app
       - node_modules:/usr/src/app/node_modules
+  beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.celery
+    command: celery -A make_celery beat --loglevel=info
+    depends_on:
+      - redis
+    volumes:
+      - ./backend:/queue
+    environment:
+      *common-env
 volumes:
   db_data:
   redis_data:
