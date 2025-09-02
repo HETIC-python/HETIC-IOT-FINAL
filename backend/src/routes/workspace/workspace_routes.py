@@ -3,6 +3,7 @@ from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, request
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from src.decorators.auth_decorator import require_auth
 from src.extensions import db
 from src.models.workspace.workspace import Workspace
 
@@ -14,10 +15,11 @@ workspace_bp = Blueprint("workspace", __name__)
 
 
 @workspace_bp.route("/workspaces", methods=["GET"])
-def get_workspaces():
+@require_auth
+def get_workspaces(user, request):
     """Récupère tous les workspaces avec gestion d'erreur robuste"""
     try:
-        workspaces = Workspace.query.all()
+        workspaces = Workspace.query.filter_by(user_id=user.id).all()
         
         workspace_list = []
         for w in workspaces:
