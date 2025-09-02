@@ -29,7 +29,7 @@ function RootLayoutNav() {
       }}
     >
       {isSignedIn ? (
-        <Stack.Screen name="(tabs)" options={{ headerShown: true }} />
+        <Stack.Screen options={{ headerShown: true }} />
       ) : (
         <>
           <Stack.Screen name="workspace" options={{ headerShown: false }} />

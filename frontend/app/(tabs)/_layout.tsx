@@ -44,7 +44,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="workspace"
+        name="index"
         options={{
           title: "Home",
           tabBarIcon: ({ color }) =>
@@ -79,7 +79,7 @@ export default function TabLayout() {
             ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="index"
         options={{
           title: "Profile",
@@ -90,7 +90,7 @@ export default function TabLayout() {
               <IconSymbol name="person" color={color} />
             ),
         }}
-      />
+      /> */}
     </Tabs>
   );
 }
