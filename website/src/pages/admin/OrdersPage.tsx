@@ -29,7 +29,7 @@ export default function OrdersPage() {
       });
       if (!response.ok) throw new Error("Failed to fetch orders");
       const data = await response.json();
-      setOrders(data);
+      setOrders(data?.data);
     } catch (error) {
       setError("Failed to load orders");
       console.error(error);
