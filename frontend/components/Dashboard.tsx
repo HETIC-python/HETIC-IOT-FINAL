@@ -21,7 +21,7 @@ export default function Dashboard() {
   const padding = 16;
   const gap = 16;
   const numColumns = width > 768 ? 2 : 1;
-  const boxWidth = (width - padding * 2 - gap * (numColumns - 1)) / numColumns;
+  const boxWidth =  (width - (padding * 2) - (gap * (numColumns - 1)) -100) / numColumns ;
 
   const [sensorData, setSensorData] = useState<SensorData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
