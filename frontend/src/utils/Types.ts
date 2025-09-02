@@ -1,28 +1,32 @@
 export type Workspace = {
-    id: string;
+  id: string;
+  name: string;
+  description: string;
+  is_active: boolean;
+  sensors: {
+    id: number;
     name: string;
-    description: string;
-    is_active: boolean;
-    sensors : Array<string | number>
+    source_id: string;
+  }[];
 };
 
 export type IWorkspace = {
-    id: string;
-    name: string;
-    description: string;
-    is_active: boolean;
+  id: string;
+  name: string;
+  description: string;
+  is_active: boolean;
 };
 
 export type Message = {
-    id: string;
-    text: string;
-    isUser: boolean;
-    timestamp: Date;
+  id: string;
+  text: string;
+  isUser: boolean;
+  timestamp: Date;
 };
 
 export type UserProfile = {
-    email: string;
-    firstName: string;
-    lastName: string;
-    phone?: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
 };

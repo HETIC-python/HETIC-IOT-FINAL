@@ -1,6 +1,8 @@
 import { SERVER_API_URL } from "@/config/api";
 import { useWorkspace } from "@/src/context/WorkspaceContext";
 // import { SensorData } from "@/src/utils/Interfaces";
+import { SensorData } from "@/src/utils/Interfaces";
+import { Workspace } from "@/src/utils/Types";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import {
@@ -12,8 +14,6 @@ import {
   useWindowDimensions,
 } from "react-native";
 import TemperatureSensor from "./sensors/TemperatureSensor";
-import { SensorData } from "@/src/utils/Interfaces";
-import { Workspace } from "@/src/utils/Types";
 
 export default function Dashboard() {
   const { width } = useWindowDimensions();
@@ -21,7 +21,8 @@ export default function Dashboard() {
   const padding = 16;
   const gap = 16;
   const numColumns = width > 768 ? 2 : 1;
-  const boxWidth =  (width - (padding * 2) - (gap * (numColumns - 1)) -100) / numColumns ;
+  const boxWidth =
+    (width - padding * 2 - gap * (numColumns - 1) - 100) / numColumns;
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["workspace", currentWorkspace?.id],
@@ -43,18 +44,22 @@ export default function Dashboard() {
 
     // 2) Sensors
     const sensors: SensorData[] = await Promise.all(
-      (workspace?.sensors ?? []).map(async (sensor: any) => {
-        const res = await fetch(`${SERVER_API_URL}/api/analytics/sensor/${sensor.id}`);
-        if (!res.ok) throw new Error(`Failed to fetch sensor ${sensor.id}`);
-        return res.json();
-      })
+      (workspace?.sensors ?? []).map(
+        async (sensor) => {
+          const res = await fetch(
+            `${SERVER_API_URL}/api/analytics/sensor/${sensor.source_id}`
+          );
+          if (!res.ok) throw new Error(`Failed to fetch sensor ${sensor.id}`);
+          return res.json();
+        }
+      )
     );
 
     return { workspace, sensors };
   };
 
   const sensorData = data?.sensors;
-  
+
   return (
     <View style={[styles.container]}>
       <ScrollView contentContainerStyle={[styles.scrollContainer]}>
@@ -62,42 +67,36 @@ export default function Dashboard() {
 
         <View style={[styles.box, styles.fullWidthBox]}>
           <Text style={[styles.boxText]}>Raspberry Pi Gateway</Text>
-          {
-            isLoading ? (
-              <Text style={[styles.statusText]}> Loading...</Text>
-            ) : isError ? (
-              <Text style={[styles.statusText]}>● Error: {error?.message}</Text>
-            ) : (
-              <Text style={[styles.statusText]}>● Online</Text>
-            )
-          }
+          {isLoading ? (
+            <Text style={[styles.statusText]}> Loading...</Text>
+          ) : isError ? (
+            <Text style={[styles.statusText]}>● Error: {error?.message}</Text>
+          ) : (
+            <Text style={[styles.statusText]}>● Online</Text>
+          )}
         </View>
 
-        {
-          isLoading &&(
-            <View style={[styles.box, styles.fullWidthBox]}>
-              <ActivityIndicator/>
-              <Text>Loading sensors...</Text>
-            </View>
-          )
-        }
+        {isLoading && (
+          <View style={[styles.box, styles.fullWidthBox]}>
+            <ActivityIndicator />
+            <Text>Loading sensors...</Text>
+          </View>
+        )}
 
-        {
-          !isLoading && (
-            <View style={[styles.grid]}>
-              {sensorData?.map((data: any, id: any) => (
-                <TemperatureSensor
-                  key={`${data.source_address}_${id}`}
-                  sensorId={data.source_address}
-                  temperature={data.temperature}
-                  humidity={data.humidity}
-                  time={data.time}
-                  width={boxWidth}
-                />
-              ))}
-            </View>
-          )
-        }
+        {!isLoading && (
+          <View style={[styles.grid]}>
+            {sensorData?.map((data: any, id: any) => (
+              <TemperatureSensor
+                key={`${data.source_address}_${id}`}
+                sensorId={data.source_address}
+                temperature={data.temperature}
+                humidity={data.humidity}
+                time={data.time}
+                width={boxWidth}
+              />
+            ))}
+          </View>
+        )}
 
         <View style={[styles.box, styles.fullWidthBox]}>
           <Text style={[styles.boxText]}>System Status</Text>

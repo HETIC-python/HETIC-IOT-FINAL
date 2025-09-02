@@ -39,6 +39,7 @@ class AnalyticsService:
             records = df.to_dict('records')
 
             formatted_records = []
+            formatted_record = None
             for record in records:
                 formatted_record = {
                     'time': record['time'].isoformat() if pd.notnull(record.get('time')) else None,
