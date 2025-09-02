@@ -14,11 +14,6 @@ import {
 import TemperatureSensor from "./sensors/TemperatureSensor";
 import { SensorData } from "@/src/utils/Interfaces";
 import { Workspace } from "@/src/utils/Types";
-// type Sensor = {
-//   id: number;
-//   name: string;
-//   source_id: string;
-// };
 
 export default function Dashboard() {
   const { width } = useWindowDimensions();
@@ -31,13 +26,18 @@ export default function Dashboard() {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["workspace", currentWorkspace?.id],
     queryFn: () => getWorkspaceData(currentWorkspace?.id?.toString() || ""),
-    refetchInterval: 30_000,
+    retry: (failureCount, error) => {
+      console.log("Retry attempt:", failureCount);
+      console.log("Error:", error);
+      return failureCount < 3;
+    },
+    refetchInterval: false,
     refetchIntervalInBackground: true,
   });
 
   const getWorkspaceData = async (id: string) => {
     // 1) Workspace
-    const wsRes = await fetch(`${SERVER_API_URL}/api/workspaces/2`);
+    const wsRes = await fetch(`${SERVER_API_URL}/api/workspaces/${id}`);
     if (!wsRes.ok) throw new Error("Failed to fetch workspace data");
     const workspace: Workspace = await wsRes.json();
 
