@@ -43,9 +43,9 @@ export default function Dashboard() {
 
     // 2) Sensors
     const sensors: SensorData[] = await Promise.all(
-      (workspace?.sensors ?? []).map(async (id: any) => {
-        const res = await fetch(`${SERVER_API_URL}/api/analytics/sensor/${id}`);
-        if (!res.ok) throw new Error(`Failed to fetch sensor ${id}`);
+      (workspace?.sensors ?? []).map(async (sensor: any) => {
+        const res = await fetch(`${SERVER_API_URL}/api/analytics/sensor/${sensor.id}`);
+        if (!res.ok) throw new Error(`Failed to fetch sensor ${sensor.id}`);
         return res.json();
       })
     );
