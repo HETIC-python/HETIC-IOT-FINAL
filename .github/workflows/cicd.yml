@@ -25,7 +25,27 @@ jobs:
         with:
           working-directory: website
           wait-on: 'https://sent-io.site'
-          config: baseUrl=https://sent-io.site
+          wait-on-timeout: 120
+          config: |
+            baseUrl=https://sent-io.site
+            defaultCommandTimeout=10000
+            pageLoadTimeout=30000
+            requestTimeout=10000
+            responseTimeout=30000
+            taskTimeout=60000
+            execTimeout=60000
+          # env:
+            # CYPRESS_COMMAND_TIMEOUT: '10000'
+            # CYPRESS_PAGE_LOAD_TIMEOUT: '30000'
+            # CYPRESS_REQUEST_TIMEOUT: '10000'
+            # CYPRESS_RESPONSE_TIMEOUT: '30000'
+
+      - name: Upload Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-screenshots
+          path: website/cypress/screenshots
 
   # backend-test:
   #   runs-on: ubuntu-latest
