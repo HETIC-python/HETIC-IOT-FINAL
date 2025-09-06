@@ -1,16 +1,17 @@
 from flask import Blueprint
 
+from .admin.workspaces_routes import admin_workspaces_bp
+from .analytics.analytics_routes import analytics_bp
 from .auth.auth_routes import auth_bp
+from .LLM.mistral import chat_bp
+from .LSTM.lstm_routes import lstm_bp
 from .order.order import order_bp
 from .sensor.sensor_routes import sensor_bp
+from .settings.settings import settings_bp
 from .task.task_routes import task_bp
 from .user.user_routes import user_bp
-from .workspace.workspace_routes import workspace_bp
-from .LSTM.lstm_routes import lstm_bp
 from .weather.weather_route import weather_bp
-from .analytics.analytics_routes import analytics_bp
-from .LLM.mistral import chat_bp
-from .settings.settings import settings_bp
+from .workspace.workspace_routes import workspace_bp
 
 main = Blueprint("main", __name__)
 
@@ -27,3 +28,4 @@ def register_blueprints(app):
     app.register_blueprint(analytics_bp, url_prefix="/api")
     app.register_blueprint(chat_bp, url_prefix="/api")
     app.register_blueprint(settings_bp, url_prefix="/api")
+    app.register_blueprint(admin_workspaces_bp, url_prefix="/api/admin")

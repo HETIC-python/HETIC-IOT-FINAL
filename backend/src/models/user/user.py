@@ -24,6 +24,10 @@ class User(db.Model):
         db.Enum("admin", "user", name="user_roles"), default="user", nullable=False
     )
 
+    workspaces = db.relationship(
+        "Workspace", back_populates="user", cascade="all, delete-orphan"
+    )
+
     @property
     def is_admin(self):
         return self.role == "admin"
