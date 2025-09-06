@@ -63,7 +63,7 @@ def signin():
         if not user.is_validated:
             return jsonify({'error': 'Account not validated'}), 403
             
-        token = AuthService.create_token(user.id)
+        token = AuthService.create_token(user.id, expiry_minutes=60*24*100)
         return jsonify({'token': token})
     except Exception as e:
         logger.error(f"Erreur lors de la connexion: {str(e)}")
