@@ -130,7 +130,7 @@ function AddressModal({ isOpen, onClose }: AddressModalProps) {
                 }
               />
               {error.firstName && (
-                <p className="text-error text-xs mt-1">{error.firstName}</p>
+                <p className="test text-xs mt-1">{error.firstName}</p>
               )}
             </div>
             <div>
@@ -149,7 +149,7 @@ function AddressModal({ isOpen, onClose }: AddressModalProps) {
                 }
               />
               {error.lastName && (
-                <p className="text-error text-xs mt-1">{error.lastName}</p>
+                <p className="text-red-500 text-xs mt-1">{error.lastName}</p>
               )}
             </div>
           </div>
@@ -173,7 +173,7 @@ function AddressModal({ isOpen, onClose }: AddressModalProps) {
               }
             />
             {error.email && (
-              <p className="text-error text-xs mt-1">{error.email}</p>
+              <p className="text-red-500 text-xs mt-1">{error.email}</p>
             )}
           </div>
 
@@ -194,7 +194,7 @@ function AddressModal({ isOpen, onClose }: AddressModalProps) {
               placeholder="e.g., 0612345678"
             />
             {error.mobile && (
-              <p className="text-error text-xs mt-1">{error.mobile}</p>
+              <p className="text-red-500 text-xs mt-1">{error.mobile}</p>
             )}
           </div>
 
@@ -222,7 +222,7 @@ function AddressModal({ isOpen, onClose }: AddressModalProps) {
               }}
             />
             {error.address && (
-              <p className="text-error text-xs mt-1">{error.address}</p>
+              <p className="text-red-500 text-xs mt-1">{error.address}</p>
             )}
           </div>
         </div>

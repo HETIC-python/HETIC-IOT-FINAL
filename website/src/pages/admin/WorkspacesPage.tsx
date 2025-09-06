@@ -147,9 +147,9 @@ export default function AdminWorkspacesPage() {
                     <button className="text-blue-600 hover:text-blue-900 mr-4">
                       Edit
                     </button>
-                    <button className="text-red-600 hover:text-red-900">
+                    {/* <button className="text-red-600 hover:text-red-900">
                       Delete
-                    </button>
+                    </button> */}
                   </td>
                 </tr>
               ))}
