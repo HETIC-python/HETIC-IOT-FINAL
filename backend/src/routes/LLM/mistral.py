@@ -3,7 +3,7 @@ import os
 
 import requests
 from flask import Blueprint, jsonify, request
-from src.decorators import require_auth
+from src.decorators.auth_decorator import require_auth
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)
