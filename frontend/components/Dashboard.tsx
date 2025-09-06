@@ -24,42 +24,82 @@ export default function Dashboard() {
   const boxWidth =
     (width - padding * 2 - gap * (numColumns - 1) - 100) / numColumns;
 
-  const { data, isLoading, isError, error } = useQuery({
+  // Je cherche les données du workspace actuel
+  const getWorkspace = async (id: string): Promise<Workspace> => {
+    const wsRes = await fetch(`${SERVER_API_URL}/api/workspaces/${id}`);
+    if (!wsRes.ok) throw new Error("Failed to fetch workspace data");
+    return wsRes.json();
+  };
+
+  // Je cherhche les données de chaque capteur
+  const getSensors = async (sensors: any[]): Promise<SensorData[]> => {
+    // NOTE: pour moi
+    // j'utilise Promise.allSettled pour gérer les erreurs individuelles
+    // si un fetch échoue, les autres continueront
+    // comme ça je peux afficher les données des capteurs qui ont réussi
+    const res = await Promise.allSettled(
+      (sensors ?? []).map(async (sensor) => {
+        const res = await fetch(
+          `${SERVER_API_URL}/api/analytics/sensor/${sensor.source_id}`
+        );
+        if (!res.ok) throw new Error(`Failed to fetch sensor ${sensor.id}`);
+        return res.json();
+      })
+    );
+    return res
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value);
+  };
+
+  // Query for workspace
+  const {
+    data: workspaceData,
+    isLoading: isWorkspaceLoading,
+    isError: isWorkspaceError,
+    error: workspaceError,
+  } = useQuery({
     queryKey: ["workspace", currentWorkspace?.id],
-    queryFn: () => getWorkspaceData(currentWorkspace?.id?.toString() || ""),
+    queryFn: () => getWorkspace(currentWorkspace?.id?.toString() || ""),
+    enabled: !!currentWorkspace?.id,
     retry: (failureCount, error) => {
-      console.log("Retry attempt:", failureCount);
-      console.log("Error:", error);
+      console.log("Workspace retry attempt:", failureCount);
+      console.log("Workspace error:", error);
       return failureCount < 3;
     },
     refetchInterval: false,
     refetchIntervalInBackground: true,
   });
 
-  const getWorkspaceData = async (id: string) => {
-    // 1) Workspace
-    const wsRes = await fetch(`${SERVER_API_URL}/api/workspaces/${id}`);
-    if (!wsRes.ok) throw new Error("Failed to fetch workspace data");
-    const workspace: Workspace = await wsRes.json();
+  // Query for sensors (after workspace is loaded)
+  const {
+    data: sensorsData,
+    isLoading: isSensorsLoading,
+    isError: isSensorsError,
+    error: sensorsError,
+  } = useQuery({
+    queryKey: ["sensors", workspaceData?.sensors],
+    queryFn: () => getSensors(workspaceData?.sensors ?? []),
+    enabled: !!workspaceData?.sensors,
+    retry: (failureCount, error) => {
+      console.log("Sensors retry attempt:", failureCount);
+      console.log("Sensors error:", error);
+      return failureCount < 3;
+    },
+    refetchInterval: false,
+    refetchIntervalInBackground: true,
+  });
 
-    // 2) Sensors
-    const sensors: SensorData[] = await Promise.all(
-      (workspace?.sensors ?? []).map(
-        async (sensor) => {
-          const res = await fetch(
-            `${SERVER_API_URL}/api/analytics/sensor/${sensor.source_id}`
-          );
-          if (!res.ok) throw new Error(`Failed to fetch sensor ${sensor.id}`);
-          return res.json();
-        }
-      )
-    );
+  const isLoading = isWorkspaceLoading || isSensorsLoading;
+  const isError = isWorkspaceError || isSensorsError;
+  const error = workspaceError || sensorsError;
+  const sensorData = sensorsData;
 
-    return { workspace, sensors };
-  };
+  console.log("Dashboard workspaceData:", workspaceData);
+  console.log("Dashboard sensorData:", sensorsData);
 
-  const sensorData = data?.sensors;
+  // const sensorData = data?.sensors;
 
+  // console.log("Dashboard sensorData:", data?.workspace);
   return (
     <View style={[styles.container]}>
       <ScrollView contentContainerStyle={[styles.scrollContainer]}>

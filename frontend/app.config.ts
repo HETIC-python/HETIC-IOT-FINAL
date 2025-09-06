@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 export default {
   expo: {
     name: "frontend",
@@ -49,8 +51,8 @@ export default {
       eas: {
         projectId: "38f36a73-5f5f-48b6-a5ab-2dc047b73d6b"
       },
-      serverApiUrl: process.env.EXPO_PUBLIC_SERVER_API_URL || "http://127.0.0.1:5001",
-      frontendUrl: process.env.EXPO_PUBLIC_FRONTEND_URL || "http://localhost:5173"
+      EXPO_PUBLIC_SERVER_API_URL: process.env.EXPO_PUBLIC_SERVER_API_URL || "http://127.0.0.1:5001",
+      EXPO_PUBLIC_FRONTEND_URL_URL: process.env.EXPO_PUBLIC_FRONTEND_URL || "http://localhost:5173"
     }
   }
 }
