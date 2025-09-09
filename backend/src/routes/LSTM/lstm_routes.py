@@ -1,8 +1,9 @@
-from flask import Blueprint, request, jsonify
+import json
+
+from flask import Blueprint, jsonify, request
+from src.service.analytics_service import AnalyticsService
 from src.service.lstm_service import LSTMService
 from src.service.train_service import TrainService
-from src.service.analytics_service import AnalyticsService
-import json
 
 lstm_bp = Blueprint('lstm', __name__)
 window_size = 16
@@ -56,4 +57,6 @@ def predict_sensor(sensor_id):
             return jsonify({"prediction": data})
         return jsonify({"success": False, "error": "Error obtaining data"}), 500
     except Exception as e:
+        if "cannot reshape array" in str(e):
+            return jsonify({"error": "Not enough data"}), 400
         return jsonify({"error": str(e)}), 500
