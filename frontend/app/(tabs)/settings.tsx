@@ -1,18 +1,19 @@
+import { UserProfile } from "@/src/utils/Types";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-    Alert,
-    ScrollView,
-    Switch,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  ScrollView,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SERVER_API_URL } from "../../config/api";
 import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
-import { UserProfile } from "@/src/utils/Types";
 
 export default function Settings() {
   const { token, signOut } = useAuth();
@@ -27,41 +28,36 @@ export default function Settings() {
   const [darkMode, setDarkMode] = useState(false);
   const [dataRefreshRate, setDataRefreshRate] = useState("60"); // in seconds
 
-  useEffect(() => {
-    // Load user profile data
-    fetchUserProfile();
-    
-    // Load settings from storage (simplified)
-    // In a real app, you'd use AsyncStorage or another storage mechanism
-    // loadSettings();
-  }, []);
+  const { data: profil, isError, isLoading: queryLoading, refetch } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: () =>fetchUserProfile(),
+    enabled: !!token,
+    retry: (failureCount, error) => {
+      console.log("Error fetching userData", failureCount);
+      console.log("Error", error);
+      return failureCount < 3;
+    }
+  })
 
   const fetchUserProfile = async () => {
-    try {
-      setIsLoading(true);
-      // This is just a placeholder - replace with your actual API endpoint
-      const response = await fetch(`${SERVER_API_URL}/api/user/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    // This is just a placeholder - replace with your actual API endpoint
+    const response = await fetch(`${SERVER_API_URL}/api/user/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      if (response.ok) {
-        const data = await response.json();
-        setUserProfile(data);
-      }
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-    } finally {
-      setIsLoading(false);
+    if (!response.ok) {
+      throw new Error('Failed to fetch user profile');
     }
+
+    return response.json();
   };
 
   const handleUpdateProfile = async () => {
     if (!userProfile) return;
     
     try {
-      setIsLoading(true);
       // This is just a placeholder - replace with your actual API endpoint
       const response = await fetch(`${SERVER_API_URL}/api/user/profile`, {
         method: "PUT",
@@ -75,6 +71,8 @@ export default function Settings() {
       if (response.ok) {
         setEditMode(false);
         Alert.alert("Success", "Profile updated successfully");
+        // Refetch the data to get the updated profile
+        refetch();
       } else {
         Alert.alert("Error", "Failed to update profile");
       }
@@ -124,11 +122,11 @@ export default function Settings() {
         )}
       </View>
 
-      {userProfile ? (
+      {profil ? (
         <View className="space-y-4">
           <View>
             <Text className="text-sm text-gray-500 mb-1">Email</Text>
-            <Text className="text-gray-800">{userProfile.email}</Text>
+            <Text className="text-gray-800">{profil.email}</Text>
           </View>
 
           <View>
@@ -136,13 +134,13 @@ export default function Settings() {
             {editMode ? (
               <TextInput
                 className="p-2 border border-gray-300 rounded-md"
-                value={userProfile.firstName}
+                value={profil.firstName}
                 onChangeText={(text) =>
                   setUserProfile((prev) => prev ? { ...prev, firstName: text } : null)
                 }
               />
             ) : (
-              <Text className="text-gray-800">{userProfile.firstName}</Text>
+              <Text className="text-gray-800">{profil.firstName}</Text>
             )}
           </View>
 
@@ -151,13 +149,13 @@ export default function Settings() {
             {editMode ? (
               <TextInput
                 className="p-2 border border-gray-300 rounded-md"
-                value={userProfile.lastName}
+                value={profil.lastName}
                 onChangeText={(text) =>
                   setUserProfile((prev) => prev ? { ...prev, lastName: text } : null)
                 }
               />
             ) : (
-              <Text className="text-gray-800">{userProfile.lastName}</Text>
+              <Text className="text-gray-800">{profil.lastName}</Text>
             )}
           </View>
 
@@ -166,20 +164,22 @@ export default function Settings() {
             {editMode ? (
               <TextInput
                 className="p-2 border border-gray-300 rounded-md"
-                value={userProfile.phone || ""}
+                value={profil.phone || ""}
                 onChangeText={(text) =>
                   setUserProfile((prev) => prev ? { ...prev, phone: text } : null)
                 }
                 keyboardType="phone-pad"
               />
             ) : (
-              <Text className="text-gray-800">{userProfile.phone || "Not set"}</Text>
+              <Text className="text-gray-800">{profil.phone || "Not set"}</Text>
             )}
           </View>
         </View>
       ) : (
         <View className="py-4">
-          <Text className="text-gray-500 text-center">Loading profile...</Text>
+          <Text className="text-gray-500 text-center">
+            {queryLoading ? "Loading profile..." : "No profile data available"}
+          </Text>
         </View>
       )}
     </View>
