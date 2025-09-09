@@ -28,7 +28,7 @@ L’objectif est de collecter et analyser en temps réel des données environnem
 
 ## 🏗️ Architecture du projet  
 
-```mermaid
+```
 flowchart LR
     subgraph IoT Devices
     C1[Capteur Température] --> MQTT
@@ -38,8 +38,8 @@ flowchart LR
 
     MQTT --> Backend[(API Backend)]
     Backend --> DB[(PostgreSQL Database)]
-    Backend --> MobileApp[📱 Mobile App (React Native)]
-    Backend --> Website[🌐 Website (React.js)]
+    Backend --> MobileApp["📱 Mobile App (React Native)"]
+    Backend --> Website["🌐 Website (React.js)"]
     Backend --> AI[🤖 Tensor Flow]
 ```
 
@@ -103,6 +103,7 @@ npm rum web
 - **Website** : React / Next.js.  
 - **AI/ML** : modèles de détection d’anomalies (Python).  
 - **Infra** : Docker  
+
 
 ---
 
