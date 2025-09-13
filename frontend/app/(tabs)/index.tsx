@@ -8,8 +8,8 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Text,
   ScrollView,
+  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -132,7 +132,7 @@ export default function Workspace() {
 
   useEffect(() => {
     fetchWorkspaces();
-  }, []);
+  }, [token]);
 
   const fetchWorkspaces = async () => {
     try {
@@ -156,7 +156,6 @@ export default function Workspace() {
     }
   };
 
-  
   const handleCreateWorkspace = async (data: {
     name: string;
     description: string;
@@ -192,15 +191,47 @@ export default function Workspace() {
   if (!isSignedIn) {
     return <NotSignedIn />;
   }
+  console.log("Workspaces:", workspaces);
+  if (workspaces?.length === 0) {
+    return (
+      <View className="flex-1 bg-gray-50">
+        <ScrollView className="flex-1 p-4">
+          <Header title="My Workspaces" />
+          <View className="p-4 flex-col items-center justify-center">
+            <Text className="text-base text-gray-600 text-center mb-4">
+              You have no workspaces yet.
+            </Text>
+            <Text className="text-base text-gray-600 text-center mb-4">
+              Say you have ordered a device on sent-io.com, you can create your
+              first workspace to get started.
+            </Text>
+            <TouchableOpacity
+              onPress={() => setShowCreateModal(true)}
+              className="bg-blue-500 px-6 py-3 rounded-full"
+            >
+              <Text
+                className="text-white font-semibold"
+                onPress={() => {
+                  // Open sent-io.com in a browser
+                  window.open("https://sent-io.site", "_blank");
+                }}
+              >
+                Create Workspace
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-gray-50">
       <ScrollView className="flex-1 p-4">
+        <Header title="My Workspaces" />
+        <ListWorkspace />
 
-      <Header title="My Workspaces" />
-      <ListWorkspace />
-
-      {/* <View className="p-4 flex-row justify-end">
+        {/* <View className="p-4 flex-row justify-end">
         <TouchableOpacity
           onPress={() => setShowCreateModal(true)}
           className="bg-blue-500 px-4 py-2 rounded-full"
@@ -209,34 +240,33 @@ export default function Workspace() {
         </TouchableOpacity>
       </View> */}
 
-      {isLoading ? (
-        <View className="flex-1 justify-center items-center">
+        {isLoading ? (
+          <View className="flex-1 justify-center items-center">
+            <ScrollView className="flex-1 p-4">
+              <ActivityIndicator size="large" color="#0072ff" />
+            </ScrollView>
+          </View>
+        ) : workspaces.length === 0 ? (
+          // <View className="flex-1 justify-center items-center px-4 -mt-16">
+          //   <Text className="text-base text-gray-600 text-center mb-4">
+          //     No workspaces available. Create your first workspace to get started.
+          //   </Text>
+          //   <TouchableOpacity
+          //     onPress={() => setShowCreateModal(true)}
+          //     className="bg-blue-500 px-6 py-3 rounded-full"
+          //   >
+          //     <Text className="text-white font-semibold">Create Workspace</Text>
+          //   </TouchableOpacity>
+          // </View>
           <ScrollView className="flex-1 p-4">
-            <ActivityIndicator size="large" color="#0072ff" />
-          </ScrollView>
-        </View>
-      ) : workspaces.length === 0 ? (
-        // <View className="flex-1 justify-center items-center px-4 -mt-16">
-        //   <Text className="text-base text-gray-600 text-center mb-4">
-        //     No workspaces available. Create your first workspace to get started.
-        //   </Text>
-        //   <TouchableOpacity
-        //     onPress={() => setShowCreateModal(true)}
-        //     className="bg-blue-500 px-6 py-3 rounded-full"
-        //   >
-        //     <Text className="text-white font-semibold">Create Workspace</Text>
-        //   </TouchableOpacity>
-        // </View>
-        <ScrollView className="flex-1 p-4">
-          <Dashboard />
-        </ScrollView>
-      ) : (
-        <View>
-          <ScrollView className="flex-1 p-4">
-
             <Dashboard />
+          </ScrollView>
+        ) : (
+          <View>
+            <ScrollView className="flex-1 p-4">
+              <Dashboard />
 
-          {/* <FlatList
+              {/* <FlatList
             data={workspaces}
             keyExtractor={(item) => item.id}
             contentContainerClassName="p-4"
@@ -264,18 +294,16 @@ export default function Workspace() {
               </TouchableOpacity>
             )}
           /> */}
-          </ScrollView>
+            </ScrollView>
+          </View>
+        )}
 
-        </View>
-      )}
-
-      <CreateWorkspaceModal
-        isVisible={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSubmit={handleCreateWorkspace}
-      />
+        <CreateWorkspaceModal
+          isVisible={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSubmit={handleCreateWorkspace}
+        />
       </ScrollView>
-
     </View>
   );
 }
