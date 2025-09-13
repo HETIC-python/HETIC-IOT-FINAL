@@ -38,10 +38,11 @@ export default function Settings() {
       return failureCount < 3;
     }
   })
+  console.log("Profile data:", profil);
 
   const fetchUserProfile = async () => {
     // This is just a placeholder - replace with your actual API endpoint
-    const response = await fetch(`${SERVER_API_URL}/api/user/profile`, {
+    const response = await fetch(`${SERVER_API_URL}/api/users/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -159,7 +160,7 @@ export default function Settings() {
             )}
           </View>
 
-          <View>
+          {/* <View>
             <Text className="text-sm text-gray-500 mb-1">Phone</Text>
             {editMode ? (
               <TextInput
@@ -173,7 +174,7 @@ export default function Settings() {
             ) : (
               <Text className="text-gray-800">{profil.phone || "Not set"}</Text>
             )}
-          </View>
+          </View> */}
         </View>
       ) : (
         <View className="py-4">

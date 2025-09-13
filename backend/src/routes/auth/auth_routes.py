@@ -28,6 +28,8 @@ def signup():
         user = User(
             username=data['username'],
             email=data['email'],
+            first_name=data['firstName'],
+            last_name=data['lastName'],
             password=AuthService.hash_password(data['password']),
             is_validated=False
         )

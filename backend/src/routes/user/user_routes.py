@@ -53,7 +53,13 @@ def get_user_me():
         user = AuthService.get_user_from_token(token)
         if user:
             return jsonify(
-                {"id": user.id, "username": user.username, "email": user.email}
+                {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "firstName": user.first_name,
+                    "lastName": user.last_name,
+                }
             )
         return jsonify({"error": "User not found"}), 404
     except Exception as e:
