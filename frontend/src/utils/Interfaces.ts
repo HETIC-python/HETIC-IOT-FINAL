@@ -20,3 +20,21 @@ export interface CreateWorkspaceModalProps {
     onClose: () => void;
     onSubmit: (data: { name: string; description: string }) => Promise<void>;
 }
+
+
+export interface Sensor {
+    id: number;
+    name: string;
+    source_id: string;
+}
+
+export interface Workspace {
+    id: number;
+    user_id: number;
+    name: string;
+    description: string;
+    created_at: string;
+    updated_at: string;
+    is_active: boolean;
+    sensors: Sensor[];
+}
