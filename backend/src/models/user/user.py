@@ -13,6 +13,8 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     is_validated = db.Column(db.Boolean, default=False)  # Added for account validation
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    first_name = db.Column(db.String(50), nullable=True)
+    last_name = db.Column(db.String(50), nullable=True)
 
     # Address fields
     address_line = db.Column(db.String(255), nullable=True)
@@ -22,6 +24,10 @@ class User(db.Model):
 
     role = db.Column(
         db.Enum("admin", "user", name="user_roles"), default="user", nullable=False
+    )
+
+    workspaces = db.relationship(
+        "Workspace", back_populates="user", cascade="all, delete-orphan"
     )
 
     @property

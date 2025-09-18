@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from celery import Celery, Task
 from celery.schedules import crontab
 from flask import Flask
@@ -25,6 +27,10 @@ def create_celery_app(app: Flask) -> Flask:
             result_backend="redis://redis:6379",
             task_ignore_result=True,
             beat_schedule={
+                'every-1-hours': {
+                    'task': 'tasks.add',
+                    'schedule': timedelta(hours=1),  # runs every 1 hour
+                },
                 'work-analysis-at-17': {
                     'task': 'tasks.treat_work_analysis',
                     'schedule': crontab(minute=0, hour=17),  # runs every day at 17:00 Local Time

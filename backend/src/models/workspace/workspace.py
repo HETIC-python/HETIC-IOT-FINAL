@@ -21,6 +21,7 @@ class Workspace(db.Model):
 
     # Define relationship after both classes exist
     sensors = db.relationship("Sensor", backref="workspace", lazy=True)
+    user = db.relationship("User", back_populates="workspaces")
 
     def __repr__(self):
         return f"<Workspace {self.name}>"

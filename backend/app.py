@@ -6,7 +6,7 @@ from src import create_app
 from src.models import Sensor, Task
 from src.service.mail_service import MailService
 from src.service.redis_client import redis_client
-from tasks import treat_sleep_analysis, treat_work_analysis
+from tasks import add, treat_sleep_analysis, treat_work_analysis
 
 app = create_app()
 
@@ -27,6 +27,7 @@ CORS(
 def home():
     print("Home route accessed")
 
+    add.delay()
     # task_m = Task.query.filter_by(name="sleep").first()
     # sensors = task_m.sensors if task_m else []
     # print(f"Sensors fetched: {sensors}")
