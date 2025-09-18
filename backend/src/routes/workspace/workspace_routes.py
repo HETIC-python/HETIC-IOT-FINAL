@@ -3,7 +3,7 @@ from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, request
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from src.decorators.auth_decorator import require_auth
+from src.decorators.auth_decorator import require_auth, require_admin
 from src.extensions import db
 from src.models.workspace.workspace import Workspace
 
@@ -132,7 +132,8 @@ def get_workspace(workspace_id):
 
 
 @workspace_bp.route("/workspaces", methods=["POST"])
-def create_workspace():
+@require_admin
+def create_workspace(user, request):
     """Crée un nouveau workspace avec gestion d'erreur robuste"""
     try:
         # Validation des données d'entrée
