@@ -1,23 +1,35 @@
 # 🛰️ Sent-io
 
 ## 📖 Contexte  
-Le projet **Sent-io** est un système de surveillance intelligente d’une pièce intérieure, basé sur l’IoT et l’IA.  
-L’objectif est de collecter et analyser en temps réel des données environnementales (température, humidité, pression, accélération ) afin de :  
-- Améliorer la sécurité et le confort de l’espace.  
+Le projet **Sent-io** est un système de surveillance intelligente d'une pièce intérieure, basé sur l'IoT et l'IA.  
+L'objectif est de collecter et analyser en temps réel des données environnementales (température, humidité, pression, accélération ) afin de :  
+- Améliorer la sécurité et le confort de l'espace.  
 - Offrir une visualisation claire via une application mobile et un site web.  
-- Exploiter l’intelligence artificielle pour détecter des anomalies et prédire des comportements.  
+- Exploiter l'intelligence artificielle pour détecter des anomalies et prédire des comportements.  
+### 🌐 Applications
+<div align="center">
+  <img src="./assets/image.PNG" alt="Dashboard Vue" width="300" />
+  <img src="./assets/IA.PNG" alt="Intelligence Artificielle" width="300" />
+  <img src="./assets/WORKSPACE.PNG" alt="Espace de travail" width="300" />
+</div>
+
+### 🌐 Web Dashboard Admin
+<div align="center">
+  <img src="./assets/admin_dash.png" alt="Dashboard Web" width="300" />
+</div>
 
 ---
 
-## 🎯 Fonctionnalités principales  
-- 📡 **Collecte IoT** : récupération en temps réel des données capteurs (MQTT).  
+## 🎯 Fonctionnalités principales
+
+- 📡 **Collecte de données** : récupération en temps réel des données des capteurs (MQTT).  
 - 📊 **Analyse IA** : détection de mouvements suspects, anomalies environnementales, prédictions.  
 - 📱 **Application mobile (React Native)** :  
   - Dashboard en temps réel.  
   - Accès multi-utilisateur.  
 - 🌐 **Website (React)** :  
   - Vue globale du système.  
-  - Interface d’administration.  
+  - Interface d'administration.  
   - Accès aux historiques et graphiques.  
 - ⚙️ **Backend (Flask + PostgreSQL)** :  
   - API centralisée.  
@@ -28,19 +40,25 @@ L’objectif est de collecter et analyser en temps réel des données environnem
 
 ## 🏗️ Architecture du projet  
 
-```
-flowchart LR
-    subgraph IoT Devices
-    C1[Capteur Température] --> MQTT
-    C2[Capteur Humidité] --> MQTT
-    C3[Capteur Mouvement] --> MQTT
-    ...
+![Architecture Sent-io](./assets/Architecture-GR2.jpg)
 
-    MQTT --> Backend[(API Backend)]
-    Backend --> DB[(PostgreSQL Database)]
-    Backend --> MobileApp["📱 Mobile App (React Native)"]
-    Backend --> Website["🌐 Website (React.js)"]
-    Backend --> AI[🤖 Tensor Flow]
+```mermaid
+flowchart LR
+  subgraph "🛠️ IoT Devices"
+    T[🌡️ Température] --> MQTT
+    H[💧 Humidité] --> MQTT
+    M[🚶 Mouvement] --> MQTT
+    P[📈 Pression] --> MQTT
+  end
+
+  MQTT((MQTT Broker)) --> B[⚙️ Backend (Flask API)]
+  B --> DB[(🗄️ PostgreSQL)]
+  B --> AI[🤖 IA/ML (TensorFlow)]
+  B --> Mobile["📱 Mobile App (React Native)"]
+  B --> Web["🌐 Website (React.js)"]
+
+  classDef iot fill:#f9f,stroke:#333,stroke-width:1px;
+  class T,H,M,P iot;
 ```
 
 ---
@@ -59,20 +77,19 @@ smart-room-monitoring/
 
 ---
 
+
 ## 🚀 Installation & Lancement  
 
 ### Via Docker
 ```bash
 docker compose up --build
 docker compose exec -it web flask db upgrade
-docker compose exec -it web pyhton seed.py
-```
+docker compose exec -it web python seed.py
 
-### 1️⃣ Backend  
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --reload
+#lstm
+docker compose exec -it python data_gen.py 
+
+docker compose exec -it curl -X POST http://127.0.0.1:5000/api/lstm/train -H "Content-Type: application/json" -d @daily_temps_week.json 
 ```
 
 ### 2️⃣ Frontend  
@@ -114,7 +131,9 @@ npm rum web
 - https://dashboard.sent-io.site/ -> Dashboard flower 
 - https://app.sent-io.site/  -> mobile, pas encore dispo
 - https://db.sent-io.site/  -> adminer 
-
+- https://nginx.sent-io.site/  -> nginx 
+- https://prom.sent-io.site/  -> prometheuse 
+- https://grafana.sent-io.site/  -> grafana 
 
 ---
 
@@ -125,3 +144,4 @@ Projet réalisé dans le cadre de la production **Bachelor Développeur Web** à
 - Ahmat Rouchad
 - Paul CHARBEL
 - Hugo Cialpucha
+
