@@ -5,12 +5,15 @@ from src.service.analytics_service import AnalyticsService
 from src.service.lstm_service import LSTMService
 from src.service.train_service import TrainService
 
-lstm_bp = Blueprint('lstm', __name__)
+lstm_bp = Blueprint("lstm", __name__)
 window_size = 16
 forecast_horizon = 7
 
-predict_service = LSTMService(window_size=window_size, forecast_horizon=forecast_horizon)
+predict_service = LSTMService(
+    window_size=window_size, forecast_horizon=forecast_horizon
+)
 train_service = TrainService(window_size=window_size, forecast_horizon=forecast_horizon)
+
 
 @lstm_bp.route("/train", methods=["POST"])
 def train():
@@ -26,6 +29,7 @@ def train():
         return jsonify({"message": "Model trained and loaded successfully."}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @lstm_bp.route("/predict", methods=["POST"])
 def predict():
@@ -49,12 +53,14 @@ def predict_sensor(sensor_id):
         if d and len(d) >= 1:
             # print("-----------------")
             data = [[x["temperature"]] for x in d]
+            if len(data) < 16:
+                data.append(data[len(data) - 1])
             if not data:
                 return jsonify({"error": "Missing 'input' data"}), 400
 
             # return jsonify({"d":data, "cond": d})
             prediction = predict_service.predict_week(data)
-            return jsonify({"prediction": data})
+            return jsonify({"prediction": prediction})
         return jsonify({"success": False, "error": "Error obtaining data"}), 500
     except Exception as e:
         if "cannot reshape array" in str(e):
