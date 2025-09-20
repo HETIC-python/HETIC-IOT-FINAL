@@ -20,11 +20,9 @@ export default function TemperatureSensor({
     try {
       const res = await fetch(`${SERVER_API_URL}/api/lstm/predict/${sensorId}`);
       const data = await res.json();
-      console.log("Prediction data:", data);
       if (data?.prediction !== undefined) {
         setPredicted(
           data.prediction
-            ?.map((a: number[]) => a[0])
             ?.reduce((a: number, b: number) => a + b) / data.prediction.length
         );
       }
