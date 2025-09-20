@@ -12,7 +12,7 @@ L'objectif est de collecter et analyser en temps réel des données environnemen
 ### 🌐 Applications
 
 ![Dashboard Vue](./assets/image.png)
-![Intelligence Artificielle](./assets/ia.pg)
+![Intelligence Artificielle](./assets/ia.png)
 ![Espace de travail](./assets/workspace.png)
 
 ### 🌐 Web Dashboard Admin
