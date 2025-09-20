@@ -3,7 +3,7 @@ from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, request
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from src.decorators.auth_decorator import require_auth
+from src.decorators.auth_decorator import require_auth, require_admin
 from src.extensions import db
 from src.models.workspace.workspace import Workspace
 
@@ -132,7 +132,8 @@ def get_workspace(workspace_id):
 
 
 @workspace_bp.route("/workspaces", methods=["POST"])
-def create_workspace():
+@require_admin
+def create_workspace(user, request):
     """Crée un nouveau workspace avec gestion d'erreur robuste"""
     try:
         # Validation des données d'entrée
@@ -217,26 +218,6 @@ def create_workspace():
             ),
             500,
         )
-
-
-# @workspace_bp.route("/workspaces", methods=["POST"])
-# def create_workspace():
-#     try:
-#         data = request.get_json()
-#         workspace = Workspace(
-#             user_id=data.get("user_id", 1),
-#             name=data.get("name"),
-#             description=data.get("description"),
-#             created_at=datetime.utcnow(),
-#             updated_at=datetime.utcnow(),
-#             is_active=data.get("is_active", True),
-#         )
-#         db.session.add(workspace)
-#         db.session.commit()
-#         return jsonify({"message": "Workspace created", "id": workspace.id}), 201
-#     except Exception as e:
-#         db.session.rollback()
-#         return jsonify({"error": str(e)}), 400
 
 
 @workspace_bp.route("/workspaces/<int:workspace_id>", methods=["PUT"])
