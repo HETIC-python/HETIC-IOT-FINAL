@@ -1,22 +1,23 @@
 # 🛰️ Sent-io
 
 ## 📖 Contexte  
+
 Le projet **Sent-io** est un système de surveillance intelligente d'une pièce intérieure, basé sur l'IoT et l'IA.  
 L'objectif est de collecter et analyser en temps réel des données environnementales (température, humidité, pression, accélération ) afin de :  
+
 - Améliorer la sécurité et le confort de l'espace.  
 - Offrir une visualisation claire via une application mobile et un site web.  
 - Exploiter l'intelligence artificielle pour détecter des anomalies et prédire des comportements.  
+
 ### 🌐 Applications
-<div align="center">
-  <img src="./assets/image.PNG" alt="Dashboard Vue" width="300" />
-  <img src="./assets/IA.PNG" alt="Intelligence Artificielle" width="300" />
-  <img src="./assets/WORKSPACE.PNG" alt="Espace de travail" width="300" />
-</div>
+
+![Dashboard Vue](./assets/image.PNG)
+![Intelligence Artificielle](./assets/IA.PNG)
+![Espace de travail](./assets/workspace.png)
 
 ### 🌐 Web Dashboard Admin
-<div align="center">
-  <img src="./assets/admin_dash.png" alt="Dashboard Web" width="300" />
-</div>
+
+![Dashboard Web](./assets/admin_dash.png)
 
 ---
 
@@ -77,10 +78,10 @@ smart-room-monitoring/
 
 ---
 
-
 ## 🚀 Installation & Lancement  
 
 ### Via Docker
+
 ```bash
 docker compose up --build
 docker compose exec -it web flask db upgrade
@@ -93,6 +94,7 @@ docker compose exec -it curl -X POST http://127.0.0.1:5000/api/lstm/train -H "Co
 ```
 
 ### 2️⃣ Frontend  
+
 ```bash
 cd frontend
 npm install
@@ -100,6 +102,7 @@ npm rum web  # ou run-ios
 ```
 
 ### 3️⃣ Website  
+
 ```bash
 cd website
 npm install
@@ -109,39 +112,41 @@ npm rum web
 ---
 
 ## 👥 Types d’utilisateurs  
+
 - **👤 Utilisateur standard** : commande des capteurs, consulte les données via l'app mobile et reçoit des alertes.  
 - **🔐 Administrateur** : configure les capteurs, crée les taches,  gère les comptes et a un accès global.  
 
 ---
 
 ## 🛠️ Technologies utilisées  
+
 - **Backend** : Python (Flask/FastAPI), PostgreSQL, MQTT.  
 - **Frontend Mobile** : React Native.  
 - **Website** : React / Next.js.  
 - **AI/ML** : modèles de détection d’anomalies (Python).  
 - **Infra** : Docker  
 
-
 ---
 
-## 📌 Liens Utils 
+## 📌 Liens Utils
 
-- https://sent-io.site/ -> SITE WEB
-- https://backend.sent-io.site/ -> backend
-- https://dashboard.sent-io.site/ -> Dashboard flower 
-- https://app.sent-io.site/  -> mobile, pas encore dispo
-- https://db.sent-io.site/  -> adminer 
-- https://nginx.sent-io.site/  -> nginx 
-- https://prom.sent-io.site/  -> prometheuse 
-- https://grafana.sent-io.site/  -> grafana 
+- <https://sent-io.site/> -> SITE WEB
+- <https://backend.sent-io.site/> -> backend
+- <https://dashboard.sent-io.site/> -> Dashboard flower
+- <https://app.sent-io.site/>  -> mobile, pas encore dispo
+- <https://db.sent-io.site/>  -> adminer
+- <https://nginx.sent-io.site/>  -> nginx
+- <https://prom.sent-io.site/>  -> prometheuse
+- <https://grafana.sent-io.site/>  -> grafana
 
 ---
 
 ## 👨‍🎓 Équipe projet  
+
 Projet réalisé dans le cadre de la production **Bachelor Développeur Web** à HETIC.  
+
 - Jiad ABDUL
 - Faithgot Glin-Dayi
 - Ahmat Rouchad
 - Paul CHARBEL
 - Hugo Cialpucha
-
