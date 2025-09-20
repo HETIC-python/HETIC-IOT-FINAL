@@ -45,16 +45,16 @@ L'objectif est de collecter et analyser en temps réel des données environnemen
 
 ```mermaid
 flowchart LR
-  subgraph "🛠️ IoT Devices"
-    T[🌡️ Température] --> MQTT
-    H[💧 Humidité] --> MQTT
-    M[🚶 Mouvement] --> MQTT
-    P[📈 Pression] --> MQTT
+  subgraph "IoT Devices"
+    T["🌡️ Température"] --> MQTT
+    H["💧 Humidité"] --> MQTT
+    M["🚶 Mouvement"] --> MQTT
+    P["📈 Pression"] --> MQTT
   end
 
-  MQTT((MQTT Broker)) --> B[⚙️ Backend (Flask API)]
-  B --> DB[(🗄️ PostgreSQL)]
-  B --> AI[🤖 IA/ML (TensorFlow)]
+  MQTT((MQTT Broker)) --> B["⚙️ Backend (Flask API)"]
+  B --> DB["🗄️ PostgreSQL"]
+  B --> AI["🤖 IA/ML (TensorFlow)"]
   B --> Mobile["📱 Mobile App (React Native)"]
   B --> Web["🌐 Website (React.js)"]
 
