@@ -1,113 +1,83 @@
 import { SERVER_API_URL } from "@/config/api";
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, RefreshControl } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants/Colors';
+import { Workspace } from "@/src/utils/Interfaces";
+import { Ionicons } from "@expo/vector-icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+  Alert,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Colors } from "../../constants/Colors";
 
-interface Sensor {
-  id: number;
-  name: string;
+async function fetchWorkspace(id: string): Promise<Workspace> {
+  const res = await fetch(`${SERVER_API_URL}/api/workspaces/${id}`);
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`HTTP ${res.status} – workspace ${id} : ${text || "fetch failed"}`);
+  }
+  return res.json();
 }
 
-interface Workspace {
-  id: number;
-  user_id: number;
-  name: string;
-  description: string;
-  created_at: string;
-  updated_at: string;
-  is_active: boolean;
-  sensors: Sensor[];
+async function deleteWorkspaceApi(id: string): Promise<void> {
+  const res = await fetch(`${SERVER_API_URL}/api/workspaces/${id}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`HTTP ${res.status} – suppression impossible : ${text || "delete failed"}`);
+  }
 }
 
 export default function WorkspacePage() {
   const { id } = useLocalSearchParams();
+  const wsId = Array.isArray(id) ? id[0] : (id ?? "");
   const router = useRouter();
-  const [workspace, setWorkspace] = useState<Workspace | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const queryClient = useQueryClient();
+
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const fetchWorkspace = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${SERVER_API_URL}/api/workspaces/${id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setWorkspace(data);
-      } else {
-        Alert.alert('Erreur', 'Impossible de charger les informations du workspace');
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement:', error);
-      Alert.alert('Erreur', 'Problème de connexion au serveur');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    data: workspace,
+    isLoading,
+    isError,
+    isRefetching,
+    refetch,
+  } = useQuery<Workspace>({
+    queryKey: ["workspace", wsId],
+    queryFn: () => fetchWorkspace(wsId),
+    enabled: wsId.length > 0,
+    retry: (count, err) => {
+      console.log("Sensors retry attempt:", count);
+      console.log("Sensors error:", err);
+      return count < 2;
+    },
+  });
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await fetchWorkspace();
-    setRefreshing(false);
-  };
-
-  const deleteWorkspace = () => {
-    console.log('deleteWorkspace called, id:', id);
-    setShowDeleteConfirm(true);
-  };
-
-  const confirmDelete = async () => {
-    console.log('Delete confirmed, making API call...');
-    try {
-      const url = `${SERVER_API_URL}/api/workspaces/${id}`;
-      console.log('DELETE URL:', url);
-      
-      const response = await fetch(url, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      console.log('DELETE response status:', response.status);
-      console.log('DELETE response ok:', response.ok);
-      
-      if (response.ok) {
-        console.log('Workspace deleted successfully');
-        setShowDeleteConfirm(false);
-        router.back();
-      } else {
-        const errorText = await response.text();
-        console.log('DELETE error response:', errorText);
-        setShowDeleteConfirm(false);
-        // Fallback to Alert if custom confirm doesn't work
-        try {
-          Alert.alert('Erreur', `Impossible de supprimer le workspace (${response.status})`);
-        } catch (e) {
-          console.error('Alert also failed:', e);
-        }
-      }
-    } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
+  // Mutation
+  const delMutation = useMutation({
+    mutationFn: () => deleteWorkspaceApi(wsId),
+    onSuccess: () => {
       setShowDeleteConfirm(false);
-      // Fallback to Alert if custom confirm doesn't work
-      try {
-        Alert.alert('Erreur', 'Problème de connexion au serveur');
-      } catch (e) {
-        console.error('Alert also failed:', e);
-      }
-    }
-  };
+      queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+      router.back();
+    },
+    onError: (err) => {
+      setShowDeleteConfirm(false);
+      Alert.alert("Erreur", err instanceof Error ? err.message : "Suppression impossible");
+    },
+  });
 
-  useEffect(() => {
-    if (id) {
-      fetchWorkspace();
-    }
-  }, [id]);
+  const openDeleteConfirm = () => setShowDeleteConfirm(true);
+  const confirmDelete = () => delMutation.mutate();
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <Text style={styles.loadingText}>Chargement...</Text>
@@ -115,7 +85,7 @@ export default function WorkspacePage() {
     );
   }
 
-  if (!workspace) {
+  if (isError || !workspace) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>Workspace non trouvé</Text>
@@ -138,33 +108,40 @@ export default function WorkspacePage() {
   };
 
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.container}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
       }
     >
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
         </TouchableOpacity>
-        <Text style={styles.title}>{workspace.name}</Text>
-        <TouchableOpacity style={styles.editButton} onPress={() => router.push(`/workspace/${id}/edit`)}>
+
+        <Text style={styles.title} numberOfLines={1}>
+          {workspace.name}
+        </Text>
+
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={() => router.push(`/workspace/${wsId}/edit`)}
+        >
           <Ionicons name="create-outline" size={24} color={Colors.light.text} />
         </TouchableOpacity>
       </View>
 
-      {/* Workspace Status */}
+      {/* Status */}
       <View style={styles.statusContainer}>
-        <View style={[styles.statusBadge, { backgroundColor: workspace.is_active ? '#4CAF50' : '#F44336' }]}>
+        <View style={[styles.statusBadge]}>
           <Text style={styles.statusText}>
-            {workspace.is_active ? 'Actif' : 'Inactif'}
+            {workspace.is_active ? "Actif" : "Inactif"}
           </Text>
         </View>
       </View>
 
-      {/* Workspace Details */}
+      {/* Infos */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Informations générales</Text>
         <View style={styles.detailRow}>
@@ -185,24 +162,25 @@ export default function WorkspacePage() {
         </View>
       </View>
 
-      {/* Sensors Section */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Capteurs ({workspace.sensors.length})</Text>
-          <TouchableOpacity 
+          <Text style={styles.sectionTitle}>
+            Capteurs ({workspace.sensors.length})
+          </Text>
+          <TouchableOpacity
             style={styles.addButton}
-            onPress={() => router.push(`/workspace/${id}/add-sensor`)}
+            onPress={() => router.push(`/workspace/${wsId}/add-sensor`)}
           >
             <Ionicons name="add" size={20} color="white" />
           </TouchableOpacity>
         </View>
-        
+
         {workspace.sensors.length > 0 ? (
           workspace.sensors.map((sensor) => (
-            <TouchableOpacity 
-              key={sensor.id} 
+            <TouchableOpacity
+              key={sensor.id}
               style={styles.sensorItem}
-              onPress={() => router.push(`/workspace/${id}/sensor/${sensor.id}`)}
+              onPress={() => router.push(`/workspace/${wsId}/sensor/${sensor.id}`)}
             >
               <View style={styles.sensorInfo}>
                 <Ionicons name="hardware-chip" size={24} color={Colors.light.tint} />
@@ -213,20 +191,25 @@ export default function WorkspacePage() {
           ))
         ) : (
           <View style={styles.emptyState}>
-            <Ionicons name="hardware-chip-outline" size={48} color={Colors.light.text} />
+            <Ionicons
+              name="hardware-chip-outline"
+              size={48}
+              color={Colors.light.text}
+            />
             <Text style={styles.emptyStateText}>Aucun capteur configuré</Text>
-            <Text style={styles.emptyStateSubtext}>Ajoutez votre premier capteur pour commencer</Text>
+            <Text style={styles.emptyStateSubtext}>
+              Ajoutez votre premier capteur pour commencer
+            </Text>
           </View>
         )}
       </View>
 
-      {/* Actions Section */}
+      {/* Actions */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Actions</Text>
-        
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.actionButton}
-          onPress={() => router.push(`/workspace/${id}/analytics`)}
+          onPress={() => router.push(`/workspace/${wsId}/analytics`)}
         >
           <Ionicons name="analytics-outline" size={24} color={Colors.light.tint} />
           <Text style={styles.actionButtonText}>Voir les analyses</Text>
@@ -242,55 +225,51 @@ export default function WorkspacePage() {
           <Ionicons name="chevron-forward" size={20} color={Colors.light.text} />
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.actionButton}
-          onPress={() => router.push(`/workspace/${id}/settings`)}
-        >
-          <Ionicons name="settings-outline" size={24} color={Colors.light.tint} />
-          <Text style={styles.actionButtonText}>Paramètres</Text>
-          <Ionicons name="chevron-forward" size={20} color={Colors.light.text} />
-        </TouchableOpacity>
-
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.actionButton, styles.dangerButton]}
-          onPress={deleteWorkspace}
+          onPress={openDeleteConfirm}
         >
-          <Ionicons name="trash-outline" size={24} color="#F44336" />
-          <Text style={[styles.actionButtonText, styles.dangerText]}>Supprimer le workspace</Text>
-          <Ionicons name="chevron-forward" size={20} color="#F44336" />
+          <Ionicons name="trash-outline" size={24} color={"#F44336"} />
+          <Text style={[styles.actionButtonText, styles.dangerText]}>
+            Supprimer le workspace
+          </Text>
+          <Ionicons name="chevron-forward" size={20} />
         </TouchableOpacity>
       </View>
 
       <View style={styles.bottomSpacing} />
-      {/* Custom Delete Confirmation Modal */}
-    {showDeleteConfirm && (
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Supprimer le workspace</Text>
-          <Text style={styles.modalMessage}>
-            Êtes-vous sûr de vouloir supprimer ce workspace ? Cette action est irréversible.
-          </Text>
-          <View style={styles.modalButtons}>
-            <TouchableOpacity 
-              style={styles.modalButtonCancel} 
-              onPress={() => setShowDeleteConfirm(false)}
-            >
-              <Text style={styles.modalButtonCancelText}>Annuler</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.modalButtonDelete} 
-              onPress={confirmDelete}
-            >
-              <Text style={styles.modalButtonDeleteText}>Supprimer</Text>
-            </TouchableOpacity>
+
+      {/* Modal de confirmation */}
+      {showDeleteConfirm && (
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Supprimer le workspace</Text>
+            <Text style={styles.modalMessage}>
+              Êtes-vous sûr de vouloir supprimer ce workspace ? Cette action est
+              irréversible.
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalButtonCancel}
+                onPress={() => setShowDeleteConfirm(false)}
+              >
+                <Text style={styles.modalButtonCancelText}>Annuler</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButtonDelete}
+                onPress={confirmDelete}
+                disabled={delMutation.isPending}
+              >
+                <Text style={styles.modalButtonDeleteText}>
+                  {delMutation.isPending ? "Suppression..." : "Supprimer"}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    )}
+      )}
     </ScrollView>
-
-)
-  ;
+  );
 }
 
 const styles = StyleSheet.create({
@@ -300,8 +279,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: Colors.light.background,
   },
   loadingText: {
@@ -310,8 +289,8 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: Colors.light.background,
     padding: 20,
   },
@@ -321,28 +300,33 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 20,
     paddingTop: 60,
     backgroundColor: Colors.light.background,
   },
+  iconButton: {
+    padding: 8,
+  },
   backButton: {
     padding: 8,
   },
+  backButtonText: {
+    fontSize: 16,
+    color: Colors.light.text,
+    fontWeight: "500",
+  },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.light.text,
     flex: 1,
-    textAlign: 'center',
-  },
-  editButton: {
-    padding: 8,
+    textAlign: "center",
   },
   statusContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   statusBadge: {
@@ -351,8 +335,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   statusText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     fontSize: 14,
   },
   section: {
@@ -360,97 +344,100 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 15,
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.light.text,
     marginBottom: 15,
   },
   detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: "#E0E0E0",
   },
   detailLabel: {
     fontSize: 16,
     color: Colors.light.text,
-    fontWeight: '500',
+    fontWeight: "500",
     flex: 1,
   },
   detailValue: {
     fontSize: 16,
     color: Colors.light.text,
     flex: 2,
-    textAlign: 'right',
+    textAlign: "right",
   },
   addButton: {
     backgroundColor: Colors.light.tint,
     borderRadius: 20,
     width: 40,
     height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   sensorItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 15,
     paddingHorizontal: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 12,
     marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: "#000",
+    shadowOffset: { 
+      width: 0,
+      height: 2
+    },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   sensorInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   sensorName: {
     fontSize: 16,
     color: Colors.light.text,
     marginLeft: 15,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   emptyState: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 40,
   },
   emptyStateText: {
     fontSize: 18,
     color: Colors.light.text,
     marginTop: 15,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   emptyStateSubtext: {
     fontSize: 14,
     color: Colors.light.text,
     marginTop: 5,
     opacity: 0.7,
-    textAlign: 'center',
+    textAlign: "center",
   },
   actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 15,
     paddingHorizontal: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 12,
     marginBottom: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -461,64 +448,61 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
     marginLeft: 15,
     flex: 1,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   dangerButton: {
     borderWidth: 1,
-    borderColor: '#F44336',
+    borderColor: "#F44336",
   },
   dangerText: {
-    color: '#F44336',
+    color: "#F44336",
   },
   bottomSpacing: {
     height: 100,
   },
-  backButtonText: {
-    fontSize: 16,
-    color: Colors.light.text,
-    fontWeight: '500',
-  },
-  // Modal styles
   modalOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
     zIndex: 1000,
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 12,
     padding: 20,
     margin: 20,
     minWidth: 300,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: "#000",
+    shadowOffset: { 
+      width: 0,
+      height: 2
+    },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.light.text,
     marginBottom: 10,
-    textAlign: 'center',
+    textAlign: "center",
   },
   modalMessage: {
     fontSize: 16,
     color: Colors.light.text,
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 22,
   },
   modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     gap: 15,
   },
   modalButtonCancel: {
@@ -527,26 +511,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    backgroundColor: 'white',
+    borderColor: "#E0E0E0",
+    backgroundColor: "white",
   },
   modalButtonCancelText: {
     fontSize: 16,
     color: Colors.light.text,
-    fontWeight: '500',
-    textAlign: 'center',
+    fontWeight: "500",
+    textAlign: "center",
   },
   modalButtonDelete: {
     flex: 1,
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
-    backgroundColor: '#F44336',
+    backgroundColor: "#F44336",
   },
   modalButtonDeleteText: {
     fontSize: 16,
-    color: 'white',
-    fontWeight: '500',
-    textAlign: 'center',
+    color: "white",
+    fontWeight: "500",
+    textAlign: "center",
   },
 });

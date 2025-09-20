@@ -2,12 +2,14 @@ import Dashboard from "@/components/Dashboard";
 import { NotSignedIn } from "@/components/NotSignedIn";
 import { SERVER_API_URL } from "@/config/api";
 import { useWorkspace } from "@/src/context/WorkspaceContext";
-import { CreateWorkspaceModalProps } from "@/src/utils/Interfaces";
-import { IWorkspace } from "@/src/utils/Types";
+import { CreateWorkspaceModalProps, Workspace as WorkspaceType } from "@/src/utils/Interfaces";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Linking,
+  RefreshControl,
   ScrollView,
   Text,
   TextInput,
@@ -102,12 +104,12 @@ function CreateWorkspaceModal({
   );
 }
 
-function ListWorkspace() {
-  const { workspaces, setCurrentWorkspace } = useWorkspace();
+function ListWorkspace({ items }: { items: WorkspaceType[] }) {
+  const { setCurrentWorkspace } = useWorkspace();
   const router = useRouter();
   return (
     <View className="flex-row flex-wrap gap-2 p-2">
-      {workspaces.map((workspace) => (
+      {items.map((workspace) => (
         <TouchableOpacity
           key={workspace.id}
           onPress={() => setCurrentWorkspace(workspace)}
@@ -122,80 +124,88 @@ function ListWorkspace() {
   );
 }
 
+async function getWorkspaces(token: string): Promise<WorkspaceType[]> {
+  const res = await fetch(`${SERVER_API_URL}/api/workspaces`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`HTTP ${res.status} – fetch workspaces failed: ${text}`);
+  }
+  return res.json();
+}
+
+async function createWorkspaceApi(
+  token: string,
+  payload: { name: string; description: string }
+): Promise<void> {
+  const res = await fetch(`${SERVER_API_URL}/api/workspaces`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: payload.name,
+      description: payload.description,
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }),
+  });
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status} – create failed`);
+  }
+}
+
 export default function Workspace() {
-  const [workspaces, setWorkspaces] = useState<IWorkspace[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { token, isSignedIn } = useAuth();
-  const router = useRouter();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    fetchWorkspaces();
-  }, [token]);
+  const {
+    data: workspaces = [],
+    isLoading,
+    isError,
+    error,
+    isRefetching,
+    refetch,
+  } = useQuery<WorkspaceType[]>({
+    queryKey: ["workspaces", token],
+    queryFn: () => getWorkspaces(token ?? ""),
+    enabled: !!token, 
+    // refetchInterval: 30_000,
+    // refetchIntervalInBackground: true,
+  });
 
-  const fetchWorkspaces = async () => {
-    try {
-      const response = await fetch(`${SERVER_API_URL}/api/workspaces`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch workspaces");
-      }
-
-      const data = await response.json();
-      console.log(data);
-      setWorkspaces(data);
-    } catch (error: any) {
-      setError("Error fetching workspaces");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const createMutation = useMutation({
+    mutationFn: (data: { name: string; description: string }) =>
+      createWorkspaceApi(token ?? "", data),
+    onSuccess: () => {
+      // rafraîchir la liste
+      queryClient.invalidateQueries({ queryKey: ["workspaces", token] });
+    },
+  });
 
   const handleCreateWorkspace = async (data: {
     name: string;
     description: string;
   }) => {
-    try {
-      const response = await fetch(`${SERVER_API_URL}/api/workspaces`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: data.name,
-          description: data.description,
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }),
-      });
-
-      if (!response.ok) throw new Error("Failed to create workspace");
-      fetchWorkspaces();
-    } catch (error) {
-      console.error("Error:", error);
-      throw error;
-    }
-  };
-
-  const handleWorkspacePress = (workspaceId: string) => {
-    router.push(`/workspace/${workspaceId}`);
+    await createMutation.mutateAsync(data);
   };
 
   if (!isSignedIn) {
     return <NotSignedIn />;
   }
-  console.log("Workspaces:", workspaces);
-  if (workspaces?.length === 0) {
+
+  if (!isLoading && workspaces.length === 0) {
     return (
       <View className="flex-1 bg-gray-50">
-        <ScrollView className="flex-1 p-4">
+        <ScrollView className="flex-1 p-4"
+          refreshControl={
+            <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+          }
+        >
           <Header title="My Workspaces" />
           <View className="p-4 flex-col items-center justify-center">
             <Text className="text-base text-gray-600 text-center mb-4">
@@ -211,15 +221,18 @@ export default function Workspace() {
             >
               <Text
                 className="text-white font-semibold"
-                onPress={() => {
-                  // Open sent-io.com in a browser
-                  window.open("https://sent-io.site", "_blank");
-                }}
+                onPress={() => Linking.openURL("https://sent-io.site")}
               >
                 Create Workspace
               </Text>
             </TouchableOpacity>
           </View>
+
+          <CreateWorkspaceModal
+            isVisible={showCreateModal}
+            onClose={() => setShowCreateModal(false)}
+            onSubmit={handleCreateWorkspace}
+          />
         </ScrollView>
       </View>
     );
@@ -227,75 +240,31 @@ export default function Workspace() {
 
   return (
     <View className="flex-1 bg-gray-50">
-      <ScrollView className="flex-1 p-4">
+      <ScrollView className="flex-1 p-4"
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+        }
+      >
         <Header title="My Workspaces" />
-        <ListWorkspace />
-
-        {/* <View className="p-4 flex-row justify-end">
-        <TouchableOpacity
-          onPress={() => setShowCreateModal(true)}
-          className="bg-blue-500 px-4 py-2 rounded-full"
-        >
-          <Text className="text-white font-medium">Create New</Text>
-        </TouchableOpacity>
-      </View> */}
 
         {isLoading ? (
           <View className="flex-1 justify-center items-center">
-            <ScrollView className="flex-1 p-4">
-              <ActivityIndicator size="large" color="#0072ff" />
-            </ScrollView>
+            <ActivityIndicator size="large" color="#0072ff" />
           </View>
-        ) : workspaces.length === 0 ? (
-          // <View className="flex-1 justify-center items-center px-4 -mt-16">
-          //   <Text className="text-base text-gray-600 text-center mb-4">
-          //     No workspaces available. Create your first workspace to get started.
-          //   </Text>
-          //   <TouchableOpacity
-          //     onPress={() => setShowCreateModal(true)}
-          //     className="bg-blue-500 px-6 py-3 rounded-full"
-          //   >
-          //     <Text className="text-white font-semibold">Create Workspace</Text>
-          //   </TouchableOpacity>
-          // </View>
-          <ScrollView className="flex-1 p-4">
-            <Dashboard />
-          </ScrollView>
+        ) : isError ? (
+          <View className="flex-1 justify-center items-center">
+            <Text className="text-red-500">
+              {error instanceof Error ? error.message : "Error fetching workspaces"}
+            </Text>
+          </View>
         ) : (
-          <View>
+          <>
+            {/* Liste cliquable */}
+            <ListWorkspace items={workspaces} />
             <ScrollView className="flex-1 p-4">
               <Dashboard />
-
-              {/* <FlatList
-            data={workspaces}
-            keyExtractor={(item) => item.id}
-            contentContainerClassName="p-4"
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                className="bg-white rounded-xl mb-3 p-4 shadow-sm border border-gray-100 active:opacity-70"
-                onPress={() => handleWorkspacePress(item.id)}
-              >
-                <Text className="text-lg font-semibold text-gray-800 mb-1">
-                  {item.name}
-                </Text>
-                {item.description && (
-                  <Text className="text-gray-600 text-sm">
-                    {item.description}
-                  </Text>
-                )}
-                <View className="flex-row items-center mt-2">
-                  <Text className="text-sm text-gray-500">
-                    {(item as any)?.sensors?.length || 0} sensors
-                  </Text>
-                  <Text className="text-primary-500 ml-auto">
-                    View Dashboard →
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            )}
-          /> */}
             </ScrollView>
-          </View>
+          </>
         )}
 
         <CreateWorkspaceModal
