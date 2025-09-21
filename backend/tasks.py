@@ -14,7 +14,7 @@ def treat_sleep_analysis():
     with app.app_context():
         task_m = Task.query.filter_by(name="sleep").first()
         sensors = task_m.sensors if task_m else []
-        for sensor in sensors[0:1]:
+        for sensor in sensors:
             treat_sensor_sleep_analysis.delay(sensor.to_dict())
 
     print(f"Analyzing sleep data for user")
@@ -54,7 +54,7 @@ def treat_sensor_sleep_analysis(sensor):
         for data in res
     )
     res_ai = AIService.analyze_sleep_data(ai_msg)
-    if res_ai.get("success") == False:
+    if res_ai.get("success"):
         user = get_workspace_user(sensor)
         if user:
             body = construct_email_body(sensor, res_ai.get("response"))
@@ -77,7 +77,7 @@ def treat_sensor_work_analysis(sensor: Sensor):
         ai_msg += f"{data['time']} - {data['temperature']}\n"
     res_ai = AIService.analyze_work_data(ai_msg)
     
-    if res_ai.get("success") == False:
+    if res_ai.get("success"):
         user = get_workspace_user(sensor)
         if user:
             body = construct_email_body(sensor, res_ai.get("response"))

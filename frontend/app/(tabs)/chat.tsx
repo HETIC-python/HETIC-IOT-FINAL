@@ -1,3 +1,4 @@
+import { NotSignedIn } from "@/components/NotSignedIn";
 import { SERVER_API_URL } from "@/config/api";
 import { Header } from "@/src/components/Header";
 import { useAuth } from "@/src/context/AuthContext";
@@ -23,7 +24,7 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { token } = useAuth();
+  const { token, isSignedIn } = useAuth();
   const listRef = useRef<FlatList>(null);
 
   async function handleSend() {
@@ -74,6 +75,10 @@ export default function ChatScreen() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  if (!isSignedIn) {
+    return <NotSignedIn />;
   }
 
   return (
