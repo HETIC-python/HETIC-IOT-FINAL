@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { SERVER_API_URL } from "../../utils/api";
 
@@ -11,13 +11,20 @@ interface User {
 
 export default function UsersPage() {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [users, setUsers] = useState<User[]>([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [error, setError] = useState<string | null>(null);
 
-  const fetchUsers = async () => {
-    try {
-      const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
+
+  const {
+    data: users,
+    isLoading,
+    error,
+    // refetch,
+  } = useQuery<User[], Error>({
+    queryKey: ["users", token],
+    queryFn: async () => {
       const response = await fetch(`${SERVER_API_URL}/api/users`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -25,19 +32,10 @@ export default function UsersPage() {
         },
       });
       if (!response.ok) throw new Error("Failed to fetch users");
-      const data = await response.json();
-      setUsers(data);
-    } catch (error) {
-      setError("Failed to load users");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+      return response.json();
+    },
+    enabled: !!token,
+  });
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -50,7 +48,7 @@ export default function UsersPage() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
         </div>
       ) : error ? (
-        <div className="bg-red-50 text-red-500 p-4 rounded-lg">{error}</div>
+        <div className="bg-red-50 text-red-500 p-4 rounded-lg">{error.message}</div>
       ) : (
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
@@ -71,7 +69,7 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {users.map((user) => (
+              {users?.map((user) => (
                 <tr
                   key={user.id}
                   className="hover:bg-gray-50 cursor-pointer"

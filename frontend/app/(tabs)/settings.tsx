@@ -1,3 +1,4 @@
+import { NotSignedIn } from "@/components/NotSignedIn";
 import { UserProfile } from "@/src/utils/Types";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
@@ -16,7 +17,7 @@ import { Header } from "../../src/components/Header";
 import { useAuth } from "../../src/context/AuthContext";
 
 export default function Settings() {
-  const { token, signOut } = useAuth();
+  const { token, signOut, isSignedIn } = useAuth();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -257,6 +258,10 @@ export default function Settings() {
       />
     </View>
   );
+  
+  if(!isSignedIn) {
+    return <NotSignedIn />;
+  }
 
   return (
     <View className="flex-1 bg-gray-50">
