@@ -149,4 +149,6 @@ Projet réalisé dans le cadre de la production **Bachelor Développeur Web** à
 - Faithgot Glin-Dayi
 - Ahmat Rouchad
 - Paul CHARBEL
-- Hugo Cialpucha
+- Hugo Cieplucha
+- Siaka koudou doumbia
+
