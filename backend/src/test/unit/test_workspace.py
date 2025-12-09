@@ -1,6 +1,6 @@
 import pytest
 from src.extensions import db
-from src.models import Workspace
+from src.models import Workspace, Sensor
 
 
 class TestWorkspaceRoutes:
@@ -63,4 +63,38 @@ class TestWorkspaceRoutes:
         assert response.status_code == 404
         data = response.get_json()
         assert data["error"] == "Not Found"
+
+    def test_get_workspace_sensors_success(self, client, app, test_workspace):
+        """Test getting sensors of a workspace"""
+        with app.app_context():
+            # Add a sensor to the workspace
+            sensor = Sensor(name="Test Sensor", workspace_id=test_workspace.id)
+            db.session.add(sensor)
+            db.session.commit()
+
+            response = client.get(f"/api/workspaces/{test_workspace.id}/sensors")
+            assert response.status_code == 200
+            data = response.get_json()
+            assert isinstance(data, list)
+            assert any(s["name"] == "Test Sensor" for s in data)
+
+    def test_get_workspace_sensors_not_found(self, client):
+        """Test getting sensors of a workspace that doesn't exist"""
+        response = client.get("/api/workspaces/9999/sensors")
+        assert response.status_code == 404
+        data = response.get_json()
+        assert data["error"] == "Not Found"
+
+    def test_get_workspace_sensors_empty(self, client, app, test_workspace):
+        """Test getting sensors when workspace has no sensors"""
+        with app.app_context():
+            # Clear any existing sensors
+            Sensor.query.filter_by(workspace_id=test_workspace.id).delete()
+            db.session.commit()
+
+            response = client.get(f"/api/workspaces/{test_workspace.id}/sensors")
+            assert response.status_code == 200
+            data = response.get_json()
+            assert isinstance(data, list)
+            assert len(data) == 0
 
