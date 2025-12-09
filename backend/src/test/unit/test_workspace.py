@@ -98,3 +98,35 @@ class TestWorkspaceRoutes:
             assert isinstance(data, list)
             assert len(data) == 0
 
+    def test_update_workspace_invalid_json(self, client, app, test_workspace):
+        """Test updating workspace with non-JSON content"""
+        with app.app_context():
+            response = client.put(
+                f"/api/workspaces/{test_workspace.id}",
+                data="not json",
+                content_type="text/plain"
+            )
+            assert response.status_code == 400
+            data = response.get_json()
+            assert data["error"] == "Bad Request"
+
+    def test_update_workspace_partial_update(self, client, app, test_workspace):
+        """Test updating workspace with only name field"""
+        with app.app_context():
+            original_description = test_workspace.description
+            response = client.put(
+                f"/api/workspaces/{test_workspace.id}",
+                json={"name": "Only Name Updated"}
+            )
+            assert response.status_code == 200
+            
+            # Verify description is unchanged
+            workspace = Workspace.query.get(test_workspace.id)
+            assert workspace.name == "Only Name Updated"
+
+    @pytest.mark.parametrize("invalid_id", [0, -1, 999999])
+    def test_get_workspace_invalid_ids(self, client, invalid_id):
+        """Test getting workspace with various invalid IDs"""
+        response = client.get(f"/api/workspaces/{invalid_id}")
+        assert response.status_code == 404
+
